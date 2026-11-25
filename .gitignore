@@ -1,0 +1,6 @@
+node_modules/
+.esengine/
+art-src/render/
+dist/*
+!dist/web/
+*.log

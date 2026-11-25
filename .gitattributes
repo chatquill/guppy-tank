@@ -1,0 +1,2 @@
+dist/** -text
+*.cmd text eol=crlf

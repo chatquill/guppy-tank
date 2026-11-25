@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "type": "material",
+  "shader": "builtin:sprite-unlit",
+  "blendMode": 1,
+  "depthTest": false,
+  "depthWrite": true,
+  "cull": 0,
+  "properties": {
+    "u_tint": {
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "a": 1
+    },
+    "u_alphaCutoff": 0
+  }
+}
+{
+  "version": "1.0",
+  "type": "material",
+  "shader": "builtin:sprite-unlit",
+  "blendMode": 2,
+  "depthTest": false,
+  "depthWrite": true,
+  "cull": 0,
+  "properties": {
+    "u_tint": {
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "a": 1
+    },
+    "u_alphaCutoff": 0
+  }
+}
+{
+  "version": "1.0",
+  "type": "material",
+  "shader": "builtin:sprite-sway",
+  "blendMode": 0,
+  "depthTest": false,
+  "depthWrite": true,
+  "cull": 0,
+  "properties": {
+    "u_tint": {
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "a": 1
+    },
+    "u_swayStrength": 0.05,
+    "u_swaySpeed": 0.9,
+    "u_swayScale": 420,
+    "u_swayWind": 1,
+    "u_swayPushStrength": 0,
+    "u_wakeBend": 0
+  }
+}

@@ -1,0 +1,1522 @@
+{
+  "version": "2.0",
+  "groups": {
+    "main": {
+      "bundleMode": "local",
+      "labels": [],
+      "assets": {
+        "8a96670e-bbf7-4804-899a-32b51446d747": {
+          "path": "assets/00463ddd06e2ddc8.png",
+          "type": "texture",
+          "size": 25880,
+          "labels": [],
+          "contentHash": "00463ddd06e2ddc8",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_pebble.png"
+        },
+        "93814525-c1e0-421f-8fd0-b92a72633a51": {
+          "path": "assets/0071b1fe03c3b246.png",
+          "type": "texture",
+          "size": 164555,
+          "labels": [],
+          "contentHash": "0071b1fe03c3b246",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_weed_2.png"
+        },
+        "63e16dc3-3c86-46db-aa48-6df51ed79434": {
+          "path": "assets/00a2354db5c55d26.mp3",
+          "type": "audio",
+          "size": 26331,
+          "labels": [],
+          "contentHash": "00a2354db5c55d26",
+          "address": "assets/audio/splash.wav"
+        },
+        "bb566e74-d78d-4179-89b8-57832dcf003a": {
+          "path": "assets/00ad32ec3deb23d6.png",
+          "type": "texture",
+          "size": 640245,
+          "labels": [],
+          "contentHash": "00ad32ec3deb23d6",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_cobra_yellow.png"
+        },
+        "686a245c-e4e2-44d2-b891-ee63102a8232": {
+          "path": "assets/02288f0754205869.esmaterial",
+          "type": "material",
+          "size": 280,
+          "labels": [],
+          "contentHash": "02288f0754205869",
+          "address": "assets/materials/additive.esmaterial",
+          "pack": {
+            "file": "packs/00309ed785dd7f9b.pack",
+            "offset": 0,
+            "size": 280
+          }
+        },
+        "47dfab27-d3c0-4955-8b64-62f47f9aad80": {
+          "path": "assets/095c87797503c20c.png",
+          "type": "texture",
+          "size": 48354,
+          "labels": [],
+          "contentHash": "095c87797503c20c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_arch.png"
+        },
+        "e143cb8d-c9e3-4616-b412-ac6840685537": {
+          "path": "assets/0b9c695be0efd2c5.png",
+          "type": "texture",
+          "size": 17408,
+          "labels": [],
+          "contentHash": "0b9c695be0efd2c5",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/heater_off.png"
+        },
+        "f92ad9cd-fbfc-4229-9dea-525cee07d394": {
+          "path": "assets/0d5315fee24b6c78.png",
+          "type": "texture",
+          "size": 282273,
+          "labels": [],
+          "contentHash": "0d5315fee24b6c78",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_black_fine.png"
+        },
+        "bffaaa12-e6dd-4192-a0d5-1329a4f30a58": {
+          "path": "assets/0ebbe8fce692d317.png",
+          "type": "texture",
+          "size": 36382,
+          "labels": [],
+          "contentHash": "0ebbe8fce692d317",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_arch_low.png"
+        },
+        "1119b82d-5230-49a8-bd72-d9bbd557a735": {
+          "path": "assets/0fdc93ce1721095b.png",
+          "type": "texture",
+          "size": 175856,
+          "labels": [],
+          "contentHash": "0fdc93ce1721095b",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "repeat"
+          },
+          "address": "assets/textures/env/caustics_b.png"
+        },
+        "178675e2-f7fa-4451-816a-06cfb5177951": {
+          "path": "assets/101656ab22004fd4.png",
+          "type": "texture",
+          "size": 202012,
+          "labels": [],
+          "contentHash": "101656ab22004fd4",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/bg_black.png"
+        },
+        "0ab4afda-15ba-4845-99a0-2c7e90df7e06": {
+          "path": "assets/129c82e2ac899610.mp3",
+          "type": "audio",
+          "size": 2089,
+          "labels": [],
+          "contentHash": "129c82e2ac899610",
+          "address": "assets/audio/plop.wav"
+        },
+        "4489c6a9-18f0-47ea-b379-67e556bad091": {
+          "path": "assets/1489b9290b6f0873.png",
+          "type": "texture",
+          "size": 479239,
+          "labels": [],
+          "contentHash": "1489b9290b6f0873",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/f_gold.png"
+        },
+        "3c3b49c9-cb5f-46c4-957a-f1e6d2dd9f2f": {
+          "path": "assets/17b4780d328eb154.png",
+          "type": "texture",
+          "size": 662,
+          "labels": [],
+          "contentHash": "17b4780d328eb154",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_flake_0.png"
+        },
+        "496bbb9c-d9bb-4c74-bad8-8b60feaa1945": {
+          "path": "assets/1cf909e02dca01c7.esmaterial",
+          "type": "material",
+          "size": 280,
+          "labels": [],
+          "contentHash": "1cf909e02dca01c7",
+          "address": "assets/materials/multiply.esmaterial",
+          "pack": {
+            "file": "packs/00309ed785dd7f9b.pack",
+            "offset": 280,
+            "size": 280
+          }
+        },
+        "4261b30a-97f0-4a09-9a4b-4ae1dfaff14b": {
+          "path": "assets/1d58fede345fd38c.png",
+          "type": "texture",
+          "size": 22434,
+          "labels": [],
+          "contentHash": "1d58fede345fd38c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_branch_low.png"
+        },
+        "69318564-03fc-443a-87f5-8d294d2e24ae": {
+          "path": "assets/1dd2703fd6aa7e63.png",
+          "type": "texture",
+          "size": 1909255,
+          "labels": [],
+          "contentHash": "1dd2703fd6aa7e63",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_sand_medium.png"
+        },
+        "aab441a3-b550-46e2-a883-31c93b537001": {
+          "path": "assets/28378bece4c5abb3.png",
+          "type": "texture",
+          "size": 1553596,
+          "labels": [],
+          "contentHash": "28378bece4c5abb3",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_river_fine.png"
+        },
+        "93fed5d2-f10b-4934-8e46-dc9efd2bc5b9": {
+          "path": "assets/2b6563293a398960.png",
+          "type": "texture",
+          "size": 37798,
+          "labels": [],
+          "contentHash": "2b6563293a398960",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_stem_2.png"
+        },
+        "8235c7a8-dd96-4b02-8c87-3fb4e164cb08": {
+          "path": "assets/2efe38f18f8e9bdb.esmaterial",
+          "type": "material",
+          "size": 402,
+          "labels": [],
+          "contentHash": "2efe38f18f8e9bdb",
+          "address": "assets/materials/sway.esmaterial",
+          "pack": {
+            "file": "packs/00309ed785dd7f9b.pack",
+            "offset": 560,
+            "size": 402
+          }
+        },
+        "f5e4d068-d644-4f20-b3e5-f4f6fc994232": {
+          "path": "assets/2fbe5ef66ffe9aba.png",
+          "type": "texture",
+          "size": 160835,
+          "labels": [],
+          "contentHash": "2fbe5ef66ffe9aba",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "repeat"
+          },
+          "address": "assets/textures/env/surface.png"
+        },
+        "0cb32965-c075-422e-97d6-54b094473f2b": {
+          "path": "assets/349061224a584eac.png",
+          "type": "texture",
+          "size": 1440077,
+          "labels": [],
+          "contentHash": "349061224a584eac",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_natural_fine.png"
+        },
+        "e42f0847-316a-4989-abcc-6f192626a74d": {
+          "path": "assets/38a1a4c883134ea7.png",
+          "type": "texture",
+          "size": 33663,
+          "labels": [],
+          "contentHash": "38a1a4c883134ea7",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_stones_2.png"
+        },
+        "a530c781-bc82-40fb-809d-dd2d5e6599bb": {
+          "path": "assets/38be758ae41dccdd.png",
+          "type": "texture",
+          "size": 2028,
+          "labels": [],
+          "contentHash": "38be758ae41dccdd",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/scrubber.png"
+        },
+        "053b5a90-6197-47b1-bc9c-4d521aaad15b": {
+          "path": "assets/39e1badbd4056f9e.mp3",
+          "type": "audio",
+          "size": 88607,
+          "labels": [],
+          "contentHash": "39e1badbd4056f9e",
+          "address": "assets/audio/filter_hum.wav"
+        },
+        "c3931be7-6117-40ab-b71a-ff0664d87021": {
+          "path": "assets/3c977b0422bffccb.png",
+          "type": "texture",
+          "size": 144,
+          "labels": [],
+          "contentHash": "3c977b0422bffccb",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_fry.png"
+        },
+        "348e1714-e374-4826-85a3-203d8886be91": {
+          "path": "assets/3ce7502a1e3bb00e.png",
+          "type": "texture",
+          "size": 48278,
+          "labels": [],
+          "contentHash": "3ce7502a1e3bb00e",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_lion.png"
+        },
+        "7785c10c-0216-4083-b1c4-35cd13324d83": {
+          "path": "assets/41445931a0a139b1.png",
+          "type": "texture",
+          "size": 91572,
+          "labels": [],
+          "contentHash": "41445931a0a139b1",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_anubias_1.png"
+        },
+        "12bc0369-6c3e-40f6-9c48-6aee72a1599a": {
+          "path": "assets/41b9fee4fec95e78.png",
+          "type": "texture",
+          "size": 45697,
+          "labels": [],
+          "contentHash": "41b9fee4fec95e78",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_branch.png"
+        },
+        "14af3e5e-d1bd-4c2e-aa2e-ba4be5a4505d": {
+          "path": "assets/441523ceac605074.png",
+          "type": "texture",
+          "size": 21926,
+          "labels": [],
+          "contentHash": "441523ceac605074",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_stones_5.png"
+        },
+        "6f15d5c6-58e1-41b6-b139-856a4d87bfa2": {
+          "path": "assets/46704dbd2ec5dafd.mp3",
+          "type": "audio",
+          "size": 88607,
+          "labels": [],
+          "contentHash": "46704dbd2ec5dafd",
+          "address": "assets/audio/bubbles.wav"
+        },
+        "31f2aad6-53f1-4bc0-914b-f143bcbc808a": {
+          "path": "assets/473c287d81b67eea.png",
+          "type": "texture",
+          "size": 26156,
+          "labels": [],
+          "contentHash": "473c287d81b67eea",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_stem_1.png"
+        },
+        "e31bc07d-5e0e-4a2a-a1bb-891eb490976e": {
+          "path": "assets/4869cb6de441ba93.png",
+          "type": "texture",
+          "size": 60810,
+          "labels": [],
+          "contentHash": "4869cb6de441ba93",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_flat.png"
+        },
+        "1ed494ef-3da1-44a2-a0e1-745c2a908ae0": {
+          "path": "assets/4940794e3e80b1d1.png",
+          "type": "texture",
+          "size": 614395,
+          "labels": [],
+          "contentHash": "4940794e3e80b1d1",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_cobra_green.png"
+        },
+        "77c573a3-cc6b-4976-8758-4682257cf713": {
+          "path": "assets/495a5d2620c0c28a.png",
+          "type": "texture",
+          "size": 208942,
+          "labels": [],
+          "contentHash": "495a5d2620c0c28a",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_tall_1.png"
+        },
+        "5de3a5be-5bac-406f-be71-7bdadf6e0539": {
+          "path": "assets/4a64ee8f96e21c69.png",
+          "type": "texture",
+          "size": 77221,
+          "labels": [],
+          "contentHash": "4a64ee8f96e21c69",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_stem_4.png"
+        },
+        "6b8fc536-933e-4c93-94df-606e2d59045b": {
+          "path": "assets/4a68549888d551ae.png",
+          "type": "texture",
+          "size": 101294,
+          "labels": [],
+          "contentHash": "4a68549888d551ae",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_weed_3.png"
+        },
+        "81b38e8c-6243-42d9-a03c-baab696fe9f1": {
+          "path": "assets/4e4e83cf896a17cc.png",
+          "type": "texture",
+          "size": 5705,
+          "labels": [],
+          "contentHash": "4e4e83cf896a17cc",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/glass_edge.png"
+        },
+        "a743b4d9-7406-4867-b6c3-1442a96574af": {
+          "path": "assets/54e068336318349f.png",
+          "type": "texture",
+          "size": 30509,
+          "labels": [],
+          "contentHash": "54e068336318349f",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/filter.png"
+        },
+        "2bff4e81-c7c9-446f-83ca-1429c155dcef": {
+          "path": "assets/581e86567e196d8e.png",
+          "type": "texture",
+          "size": 109160,
+          "labels": [],
+          "contentHash": "581e86567e196d8e",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_chest.png"
+        },
+        "8349143f-bd24-47df-b7cc-b4e70a59169b": {
+          "path": "assets/59b98847e52e38da.png",
+          "type": "texture",
+          "size": 360326,
+          "labels": [],
+          "contentHash": "59b98847e52e38da",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_sand_fine.png"
+        },
+        "a3452645-460b-4575-aca2-d82c6e97180c": {
+          "path": "assets/5eb74b71fbe56df3.png",
+          "type": "texture",
+          "size": 38880,
+          "labels": [],
+          "contentHash": "5eb74b71fbe56df3",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_shell.png"
+        },
+        "b3808e59-bba9-4934-8413-f31e834a2b54": {
+          "path": "assets/5f4743482fa32f9d.png",
+          "type": "texture",
+          "size": 157206,
+          "labels": [],
+          "contentHash": "5f4743482fa32f9d",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_boulder.png"
+        },
+        "0a747230-1cad-4c36-88ca-8fa60e6407c4": {
+          "path": "assets/5f73ec7f1449c0ea.png",
+          "type": "texture",
+          "size": 1178,
+          "labels": [],
+          "contentHash": "5f73ec7f1449c0ea",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_cichlid.png"
+        },
+        "b4de3d7f-2b84-45c0-9fd8-fd2508b1b1a2": {
+          "path": "assets/60fb67aba59539fc.png",
+          "type": "texture",
+          "size": 523848,
+          "labels": [],
+          "contentHash": "60fb67aba59539fc",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_halfblack.png"
+        },
+        "866da205-bf11-4c74-a621-9f2c22b32fc3": {
+          "path": "assets/64abb11bf7f06326.png",
+          "type": "texture",
+          "size": 309498,
+          "labels": [],
+          "contentHash": "64abb11bf7f06326",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_river_coarse.png"
+        },
+        "14be8458-9c1a-400d-9d94-42c42cb29839": {
+          "path": "assets/64ce790f58862464.png",
+          "type": "texture",
+          "size": 602075,
+          "labels": [],
+          "contentHash": "64ce790f58862464",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/f_snake.png"
+        },
+        "658797f1-750f-413e-b15e-59b4e6bc3210": {
+          "path": "assets/655d5dc1d7a9fb6e.png",
+          "type": "texture",
+          "size": 422,
+          "labels": [],
+          "contentHash": "655d5dc1d7a9fb6e",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_flake_3.png"
+        },
+        "77bb8943-3924-41af-9b2e-92a7cedf0bb5": {
+          "path": "assets/67d6bf7012cb7201.png",
+          "type": "texture",
+          "size": 674625,
+          "labels": [],
+          "contentHash": "67d6bf7012cb7201",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_blue_grass.png"
+        },
+        "4eec8b59-7266-4f6b-a3f8-ffca83961c3d": {
+          "path": "assets/682a8865ed00902f.png",
+          "type": "texture",
+          "size": 85307,
+          "labels": [],
+          "contentHash": "682a8865ed00902f",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_sword_3.png"
+        },
+        "a8049bf0-d1ca-4a4f-8c92-879cfe0efd30": {
+          "path": "assets/6ca5f38ce2cd030d.png",
+          "type": "texture",
+          "size": 213042,
+          "labels": [],
+          "contentHash": "6ca5f38ce2cd030d",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/bg_frosted.png"
+        },
+        "ddd1e667-4f5d-4259-a036-d54370186621": {
+          "path": "assets/6eb044a0e1ee0039.png",
+          "type": "texture",
+          "size": 144893,
+          "labels": [],
+          "contentHash": "6eb044a0e1ee0039",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_trunk.png"
+        },
+        "a0f0e913-089c-4f68-a78c-4e59ad3b99cb": {
+          "path": "assets/7008ff290799c055.png",
+          "type": "texture",
+          "size": 337245,
+          "labels": [],
+          "contentHash": "7008ff290799c055",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_river_fine.png"
+        },
+        "ba9ed591-a176-42f2-9ea8-7bb804fb3b77": {
+          "path": "assets/73b773013877a366.png",
+          "type": "texture",
+          "size": 104268,
+          "labels": [],
+          "contentHash": "73b773013877a366",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_nettle_1.png"
+        },
+        "696213fa-3bd5-413a-9f59-cc9ecc788944": {
+          "path": "assets/7aaffaabfcfe2304.png",
+          "type": "texture",
+          "size": 1066,
+          "labels": [],
+          "contentHash": "7aaffaabfcfe2304",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_wafer.png"
+        },
+        "1fd5dbe5-f075-4ab4-82ee-ede922501466": {
+          "path": "assets/8427ab51d6140cd6.png",
+          "type": "texture",
+          "size": 1457527,
+          "labels": [],
+          "contentHash": "8427ab51d6140cd6",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_river_coarse.png"
+        },
+        "466dc58a-210c-419c-836f-25222febefc4": {
+          "path": "assets/848597821f722e87.png",
+          "type": "texture",
+          "size": 286744,
+          "labels": [],
+          "contentHash": "848597821f722e87",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_natural_coarse.png"
+        },
+        "a51716a3-69e8-47bd-a204-8e6a15031061": {
+          "path": "assets/848dd9f7985ef57a.png",
+          "type": "texture",
+          "size": 48248,
+          "labels": [],
+          "contentHash": "848dd9f7985ef57a",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_mossy_3.png"
+        },
+        "c086ed24-6920-421a-a06d-bf1a5dfc794e": {
+          "path": "assets/85a6d56dfe81e01d.png",
+          "type": "texture",
+          "size": 277641,
+          "labels": [],
+          "contentHash": "85a6d56dfe81e01d",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_black_coarse.png"
+        },
+        "02142a7f-b0aa-4367-ac12-b06006497ef7": {
+          "path": "assets/85b38abf4a93d4f3.png",
+          "type": "texture",
+          "size": 72495,
+          "labels": [],
+          "contentHash": "85b38abf4a93d4f3",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_nettle_3.png"
+        },
+        "757a1737-58e2-4c44-a09c-331990dbb533": {
+          "path": "assets/8644c282d2033860.png",
+          "type": "texture",
+          "size": 49605,
+          "labels": [],
+          "contentHash": "8644c282d2033860",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_stem_3.png"
+        },
+        "b368a102-8abb-4293-8b23-b4203da494c8": {
+          "path": "assets/8996504c8a7e0914.png",
+          "type": "texture",
+          "size": 63188,
+          "labels": [],
+          "contentHash": "8996504c8a7e0914",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "repeat"
+          },
+          "address": "assets/textures/env/rays.png"
+        },
+        "131faaa0-39cc-4a79-b1d6-4faf754dd989": {
+          "path": "assets/89a140be8c6b8669.png",
+          "type": "texture",
+          "size": 11262,
+          "labels": [],
+          "contentHash": "89a140be8c6b8669",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/bucket.png"
+        },
+        "e890d339-1fc7-4e93-b418-7175a028b1c8": {
+          "path": "assets/8aa13a721b116a9b.png",
+          "type": "texture",
+          "size": 208451,
+          "labels": [],
+          "contentHash": "8aa13a721b116a9b",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "repeat"
+          },
+          "address": "assets/textures/env/caustics_a.png"
+        },
+        "610bbebd-5455-4b0a-9ed7-797041bffdcb": {
+          "path": "assets/8ba35f335c45f98c.png",
+          "type": "texture",
+          "size": 98166,
+          "labels": [],
+          "contentHash": "8ba35f335c45f98c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_tall_9.png"
+        },
+        "c7e2ecca-dbf6-424b-b1ae-2b2b6f3f1e80": {
+          "path": "assets/8bec2390ad37e9e0.mp3",
+          "type": "audio",
+          "size": 1253,
+          "labels": [],
+          "contentHash": "8bec2390ad37e9e0",
+          "address": "assets/audio/click.wav"
+        },
+        "096f31d5-31b9-4068-84f6-231e63e91ffb": {
+          "path": "assets/8e46efa9a1b755de.png",
+          "type": "texture",
+          "size": 173180,
+          "labels": [],
+          "contentHash": "8e46efa9a1b755de",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_fern_1.png"
+        },
+        "b4e6f60a-36e7-4ab7-bd4c-553ba8a2f1b1": {
+          "path": "assets/8f83dae906db3299.png",
+          "type": "texture",
+          "size": 1847336,
+          "labels": [],
+          "contentHash": "8f83dae906db3299",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_sand_coarse.png"
+        },
+        "3b3a1215-8aba-448c-956d-59f1de714e4a": {
+          "path": "assets/90143a0032cb8b4c.png",
+          "type": "texture",
+          "size": 373979,
+          "labels": [],
+          "contentHash": "90143a0032cb8b4c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/young.png"
+        },
+        "2bfcee4c-8da9-4e57-afe1-762b565c5b72": {
+          "path": "assets/92c1a9ff1627f180.png",
+          "type": "texture",
+          "size": 55087,
+          "labels": [],
+          "contentHash": "92c1a9ff1627f180",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_pile_3.png"
+        },
+        "1988e658-9b1b-4770-a8e5-8cef6a1afa51": {
+          "path": "assets/99ddea0bab3fb7c6.png",
+          "type": "texture",
+          "size": 23050,
+          "labels": [],
+          "contentHash": "99ddea0bab3fb7c6",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_3.png"
+        },
+        "4e784640-a1f5-403a-8cb1-4b2876810510": {
+          "path": "assets/99f518682893a232.png",
+          "type": "texture",
+          "size": 20070,
+          "labels": [],
+          "contentHash": "99f518682893a232",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_vase.png"
+        },
+        "e0760b55-abec-4f9e-9960-a39f892cacd5": {
+          "path": "assets/9a3297190b322944.png",
+          "type": "texture",
+          "size": 646,
+          "labels": [],
+          "contentHash": "9a3297190b322944",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_flake_2.png"
+        },
+        "7dd12785-657a-4131-93be-3ddb82eb4ce2": {
+          "path": "assets/9cff03f231f988eb.png",
+          "type": "texture",
+          "size": 1428457,
+          "labels": [],
+          "contentHash": "9cff03f231f988eb",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_natural_medium.png"
+        },
+        "0bdedfeb-2638-415a-a15c-8339b14a9229": {
+          "path": "assets/9dab5e1243846370.png",
+          "type": "texture",
+          "size": 582,
+          "labels": [],
+          "contentHash": "9dab5e1243846370",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_brine.png"
+        },
+        "ea8f3c8b-030f-468a-b5b9-79873c75e66a": {
+          "path": "assets/a3c36f7d0452fbcc.png",
+          "type": "texture",
+          "size": 180775,
+          "labels": [],
+          "contentHash": "a3c36f7d0452fbcc",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_sword_1.png"
+        },
+        "b3d6601f-983f-4007-a498-8472454fcd92": {
+          "path": "assets/a5d1009c8b414a2a.png",
+          "type": "texture",
+          "size": 149000,
+          "labels": [],
+          "contentHash": "a5d1009c8b414a2a",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_sandstone.png"
+        },
+        "994ff2dc-508b-4917-b97c-4c1a6b0f9c24": {
+          "path": "assets/a82637cc354fde3f.png",
+          "type": "texture",
+          "size": 51167,
+          "labels": [],
+          "contentHash": "a82637cc354fde3f",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_mossy_1.png"
+        },
+        "6bab0008-3904-49c0-9434-150a223e05ad": {
+          "path": "assets/aa068f5604d54ddd.png",
+          "type": "texture",
+          "size": 1344216,
+          "labels": [],
+          "contentHash": "aa068f5604d54ddd",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_natural_coarse.png"
+        },
+        "e3bb2b5c-f4d7-41b1-b9ce-5594e24349ca": {
+          "path": "assets/ab5ce7a834ba7b22.png",
+          "type": "texture",
+          "size": 291333,
+          "labels": [],
+          "contentHash": "ab5ce7a834ba7b22",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_natural_medium.png"
+        },
+        "ac97d0e3-9fad-4d02-a044-3c08e3d6870a": {
+          "path": "assets/abd885a4a2a3669b.png",
+          "type": "texture",
+          "size": 303175,
+          "labels": [],
+          "contentHash": "abd885a4a2a3669b",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_natural_fine.png"
+        },
+        "70d3a9c0-d86d-4455-9ba3-eefd833c4f9a": {
+          "path": "assets/b16e94bb1be2458f.png",
+          "type": "texture",
+          "size": 147274,
+          "labels": [],
+          "contentHash": "b16e94bb1be2458f",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_tall_3.png"
+        },
+        "2d233889-c1b7-408a-b1b3-69218ede26b0": {
+          "path": "assets/b1b659afceb6e984.png",
+          "type": "texture",
+          "size": 544,
+          "labels": [],
+          "contentHash": "b1b659afceb6e984",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_pellet.png"
+        },
+        "102b068a-86b9-49e3-bd36-1c7f566a2e8e": {
+          "path": "assets/b3fddcf0110c75ce.png",
+          "type": "texture",
+          "size": 1309237,
+          "labels": [],
+          "contentHash": "b3fddcf0110c75ce",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_black_coarse.png"
+        },
+        "a2019e53-58c1-4961-9d0b-a1feaf0521f6": {
+          "path": "assets/b498f655cc9abb8e.png",
+          "type": "texture",
+          "size": 135882,
+          "labels": [],
+          "contentHash": "b498f655cc9abb8e",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_fern_2.png"
+        },
+        "d6e26f83-d759-43b4-891d-f738283960f4": {
+          "path": "assets/b79ed8a4ae69deb7.png",
+          "type": "texture",
+          "size": 93691,
+          "labels": [],
+          "contentHash": "b79ed8a4ae69deb7",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_nettle_2.png"
+        },
+        "4f99af0c-f74c-40d8-876b-0e5f79aa5b86": {
+          "path": "assets/b88fc3bdf9bf98dc.png",
+          "type": "texture",
+          "size": 237528,
+          "labels": [],
+          "contentHash": "b88fc3bdf9bf98dc",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_weed_1.png"
+        },
+        "13997c69-9304-45f4-b042-14f293922aa7": {
+          "path": "assets/b9318ed16bdfd884.png",
+          "type": "texture",
+          "size": 88145,
+          "labels": [],
+          "contentHash": "b9318ed16bdfd884",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_statue.png"
+        },
+        "ff960469-6cfe-4e56-a8fd-fb5c1968aff4": {
+          "path": "assets/ba1dc9939f8638cf.png",
+          "type": "texture",
+          "size": 79,
+          "labels": [],
+          "contentHash": "ba1dc9939f8638cf",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/white.png"
+        },
+        "465e4b6c-796c-4dd2-a85c-ac6baf536e44": {
+          "path": "assets/bb301d63caee69f7.png",
+          "type": "texture",
+          "size": 213790,
+          "labels": [],
+          "contentHash": "bb301d63caee69f7",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/bg_blue.png"
+        },
+        "1ba2bde1-0c51-4de3-a03d-1f84b65ebd1a": {
+          "path": "assets/bd73071c8f0e918d.png",
+          "type": "texture",
+          "size": 3557,
+          "labels": [],
+          "contentHash": "bd73071c8f0e918d",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/bubble.png"
+        },
+        "352bfcc9-8406-445f-be86-0fcb6740311c": {
+          "path": "assets/c052793b47e222a3.png",
+          "type": "texture",
+          "size": 57673,
+          "labels": [],
+          "contentHash": "c052793b47e222a3",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_twigs_1.png"
+        },
+        "3df582bb-70dd-49c7-b1ea-632ddf415f1e": {
+          "path": "assets/c1d09e33eabfa8e7.png",
+          "type": "texture",
+          "size": 61335,
+          "labels": [],
+          "contentHash": "c1d09e33eabfa8e7",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_anubias_2.png"
+        },
+        "002e2568-6397-45df-9d96-a74bf18257fc": {
+          "path": "assets/cb374c96c8e981fd.png",
+          "type": "texture",
+          "size": 1382606,
+          "labels": [],
+          "contentHash": "cb374c96c8e981fd",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_black_fine.png"
+        },
+        "e50dd850-1222-491a-be62-f16972438652": {
+          "path": "assets/ccf40ae283479aea.png",
+          "type": "texture",
+          "size": 2743,
+          "labels": [],
+          "contentHash": "ccf40ae283479aea",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/vacuum.png"
+        },
+        "483c8718-2652-431c-b146-a481cb0a7fe7": {
+          "path": "assets/cefa3c5d1515e11c.png",
+          "type": "texture",
+          "size": 73515,
+          "labels": [],
+          "contentHash": "cefa3c5d1515e11c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_pile_4.png"
+        },
+        "1f358290-dac0-4981-8d52-f9206c02bdc5": {
+          "path": "assets/cf69a0d8b047b879.png",
+          "type": "texture",
+          "size": 190146,
+          "labels": [],
+          "contentHash": "cf69a0d8b047b879",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_granite.png"
+        },
+        "874631ea-071b-4eb6-aca5-d8b484eea2ff": {
+          "path": "assets/d07cd63a00ddadb8.png",
+          "type": "texture",
+          "size": 42795,
+          "labels": [],
+          "contentHash": "d07cd63a00ddadb8",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/algae.png"
+        },
+        "35129a75-3cd2-4082-b280-ada706b9480b": {
+          "path": "assets/d0b53653ee737f58.png",
+          "type": "texture",
+          "size": 1379460,
+          "labels": [],
+          "contentHash": "d0b53653ee737f58",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_black_medium.png"
+        },
+        "fa755424-8ffa-4d72-b437-c7498736e033": {
+          "path": "assets/d42f8bcd6d7434a8.png",
+          "type": "texture",
+          "size": 364962,
+          "labels": [],
+          "contentHash": "d42f8bcd6d7434a8",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_sand_coarse.png"
+        },
+        "b3d8b85b-887b-488d-ac1d-02ba21941316": {
+          "path": "assets/d56edbab29df785c.png",
+          "type": "texture",
+          "size": 2855,
+          "labels": [],
+          "contentHash": "d56edbab29df785c",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/airstone.png"
+        },
+        "2782eda6-02a5-42b7-9064-751c884291bf": {
+          "path": "assets/d9423cd8486bbeb3.png",
+          "type": "texture",
+          "size": 83736,
+          "labels": [],
+          "contentHash": "d9423cd8486bbeb3",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_pile_1.png"
+        },
+        "75190057-33eb-4135-bb1c-c5508147fe12": {
+          "path": "assets/db52adb4660bbc34.png",
+          "type": "texture",
+          "size": 19829,
+          "labels": [],
+          "contentHash": "db52adb4660bbc34",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_stones_3.png"
+        },
+        "23d6fd4a-710a-4ae9-b797-0fe836e19ba4": {
+          "path": "assets/dc13428b6417adbd.png",
+          "type": "texture",
+          "size": 1534348,
+          "labels": [],
+          "contentHash": "dc13428b6417adbd",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_gravel_river_medium.png"
+        },
+        "bc851d1d-0964-454c-9789-935806a99188": {
+          "path": "assets/dd2fd26971a7f6f0.png",
+          "type": "texture",
+          "size": 318834,
+          "labels": [],
+          "contentHash": "dd2fd26971a7f6f0",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_river_medium.png"
+        },
+        "4e77c591-9c4c-4376-9714-94a73f69f865": {
+          "path": "assets/de428ecc527e0ca1.png",
+          "type": "texture",
+          "size": 4216,
+          "labels": [],
+          "contentHash": "de428ecc527e0ca1",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/shadow.png"
+        },
+        "2ca5e0be-e984-49c8-ac8b-f8e47a80a075": {
+          "path": "assets/e01bce8c392f5021.png",
+          "type": "texture",
+          "size": 55829,
+          "labels": [],
+          "contentHash": "e01bce8c392f5021",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_pile_2.png"
+        },
+        "4269f9a2-c699-4757-89ca-ff11d0c5f49a": {
+          "path": "assets/e236a8d678c7d9e6.png",
+          "type": "texture",
+          "size": 3432,
+          "labels": [],
+          "contentHash": "e236a8d678c7d9e6",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/glass_reflection.png"
+        },
+        "d5ba8796-f4c6-4191-8258-32f690ee391b": {
+          "path": "assets/e28728d7b6aa1f44.png",
+          "type": "texture",
+          "size": 16990,
+          "labels": [],
+          "contentHash": "e28728d7b6aa1f44",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/heater_on.png"
+        },
+        "6a6e145a-4059-4d46-a5b4-6b8bc7c6b6fa": {
+          "path": "assets/e4c2e2e0b2acf0bd.png",
+          "type": "texture",
+          "size": 275703,
+          "labels": [],
+          "contentHash": "e4c2e2e0b2acf0bd",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_gravel_black_medium.png"
+        },
+        "c30a2f8a-d2ba-4bfb-a49a-64bd285aeea7": {
+          "path": "assets/e672dbc55aec0764.png",
+          "type": "texture",
+          "size": 469926,
+          "labels": [],
+          "contentHash": "e672dbc55aec0764",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/f_grey.png"
+        },
+        "11e261ee-2dcd-4cea-8806-773ba14cecfb": {
+          "path": "assets/ea24d2001c820229.png",
+          "type": "texture",
+          "size": 527,
+          "labels": [],
+          "contentHash": "ea24d2001c820229",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/food_flake_1.png"
+        },
+        "bed2daa2-d933-4fb3-b9d3-3224e7cb54b8": {
+          "path": "assets/ead3433aa34e813b.png",
+          "type": "texture",
+          "size": 29460,
+          "labels": [],
+          "contentHash": "ead3433aa34e813b",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/orn_pot.png"
+        },
+        "261a5d37-b0f1-4584-8f2d-c551cf155ef4": {
+          "path": "assets/ee3b6c6c9d2cecc1.png",
+          "type": "texture",
+          "size": 49490,
+          "labels": [],
+          "contentHash": "ee3b6c6c9d2cecc1",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/light_fall.png"
+        },
+        "6ef88ea2-7e55-425c-84b0-9eb4301c8ea7": {
+          "path": "assets/f083a3bf52bc2425.png",
+          "type": "texture",
+          "size": 1775,
+          "labels": [],
+          "contentHash": "f083a3bf52bc2425",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/mulm.png"
+        },
+        "427ef049-8a55-4aae-ab31-6f2b3b6684b6": {
+          "path": "assets/f23bb57b79e42cf4.png",
+          "type": "texture",
+          "size": 547053,
+          "labels": [],
+          "contentHash": "f23bb57b79e42cf4",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_gold.png"
+        },
+        "54f7cf4d-8811-4354-bd7a-474fbc4468c9": {
+          "path": "assets/f382bd7026ce6d9a.png",
+          "type": "texture",
+          "size": 46386,
+          "labels": [],
+          "contentHash": "f382bd7026ce6d9a",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/rock_mossy_2.png"
+        },
+        "1c1dd407-aee6-450c-b842-0038ab0937f6": {
+          "path": "assets/f3d338a283efd9b8.png",
+          "type": "texture",
+          "size": 551034,
+          "labels": [],
+          "contentHash": "f3d338a283efd9b8",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/f_tuxedo.png"
+        },
+        "10c96876-f740-4775-9fb0-61e411d02379": {
+          "path": "assets/f4a4477263752d94.png",
+          "type": "texture",
+          "size": 358592,
+          "labels": [],
+          "contentHash": "f4a4477263752d94",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/floor_sand_medium.png"
+        },
+        "4b0410e5-585f-452d-ab53-e648c7288158": {
+          "path": "assets/f74338c59cd7182f.png",
+          "type": "texture",
+          "size": 1893430,
+          "labels": [],
+          "contentHash": "f74338c59cd7182f",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/substrate_sand_fine.png"
+        },
+        "42f0900c-15cf-4020-986a-f82ced58f9e6": {
+          "path": "assets/f7fe2e4c80361063.png",
+          "type": "texture",
+          "size": 291,
+          "labels": [],
+          "contentHash": "f7fe2e4c80361063",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/env/mote.png"
+        },
+        "8b113fb1-2895-446f-80f7-a2764e3b4897": {
+          "path": "assets/f807a770e954fcae.png",
+          "type": "texture",
+          "size": 354070,
+          "labels": [],
+          "contentHash": "f807a770e954fcae",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/fry.png"
+        },
+        "01be351f-ac8b-498c-9fa2-e86665e175a9": {
+          "path": "assets/f81d0c242c179716.png",
+          "type": "texture",
+          "size": 100682,
+          "labels": [],
+          "contentHash": "f81d0c242c179716",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/wood_log.png"
+        },
+        "f1a1b43f-0f21-439e-be78-43f373491071": {
+          "path": "assets/f846012280418a6b.png",
+          "type": "texture",
+          "size": 98826,
+          "labels": [],
+          "contentHash": "f846012280418a6b",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_4.png"
+        },
+        "c4592d5e-3122-4315-bca3-8c9eb6d78c57": {
+          "path": "assets/fc42764356616ee9.mp3",
+          "type": "audio",
+          "size": 512417,
+          "labels": [],
+          "contentHash": "fc42764356616ee9",
+          "address": "assets/audio/music.wav"
+        },
+        "b05c9a4b-813a-43e1-a54c-eb8c58fb260c": {
+          "path": "assets/fccde1c51a666ae9.png",
+          "type": "texture",
+          "size": 140220,
+          "labels": [],
+          "contentHash": "fccde1c51a666ae9",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/decor/plant_grass_tall_2.png"
+        },
+        "393f12d7-4ef6-4672-b97b-53353db446e3": {
+          "path": "assets/ff0eebf89b058679.png",
+          "type": "texture",
+          "size": 530944,
+          "labels": [],
+          "contentHash": "ff0eebf89b058679",
+          "textureImport": {
+            "filter": "linear",
+            "wrap": "clamp"
+          },
+          "address": "assets/textures/fish/m_tiger.png"
+        },
+        "9d9b6178-75e7-4ae5-8cc4-1c435f7056e3": {
+          "path": "assets/scenes/main.esscene",
+          "type": "json",
+          "size": 1288,
+          "labels": [],
+          "contentHash": "9fb6133b79f07965"
+        }
+      }
+    }
+  },
+  "revision": "2fb21126d1b99f36"
+}

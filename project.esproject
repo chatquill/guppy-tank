@@ -1,0 +1,12 @@
+{
+  "formatVersion": "1",
+  "name": "Guppy Tank",
+  "description": "A relaxing, realistic guppy aquarium.",
+  "version": "0.1.0",
+  "defaultScene": "assets/scenes/main.esscene",
+  "designResolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "spineVersion": "none"
+}
