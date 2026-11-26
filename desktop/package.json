@@ -6,10 +6,47 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "installer": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
     "@electron/packager": "^18.3.6",
-    "electron": "^33.2.0"
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "author": "Guppy Tank",
+  "build": {
+    "appId": "io.github.chatquill.guppytank",
+    "productName": "Guppy Tank",
+    "copyright": "Guppy Tank",
+    "directories": {
+      "output": "../dist/installer"
+    },
+    "files": [
+      "main.js",
+      "game/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Guppy Tank",
+      "artifactName": "Guppy Tank Setup.exe",
+      "deleteAppDataOnUninstall": false
+    }
   }
 }

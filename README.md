@@ -62,7 +62,9 @@ computer (port 47815). The helper serves the game and keeps the one save that ev
 
 **As a Windows program:** run `desktop/Build-Desktop.ps1` (needs Node.js) to turn the exported game into
 `dist/desktop/Guppy Tank-win32-x64/Guppy Tank.exe`, with a zip beside it to share. It needs no browser. F11 or
-Alt+Enter switches fullscreen. It keeps a save of its own, separate from the shared one below.
+Alt+Enter switches fullscreen. It keeps a save of its own, separate from the shared one below. Run the
+script with `-Installer` to also make `dist/installer/Guppy Tank Setup.exe`, which installs it for your own account
+with Start menu and desktop shortcuts and an uninstaller. The installer is unsigned, so Windows asks before running it.
 
 **In Wallpaper Engine:** run `wallpaper/Build-WallpaperEngine.ps1`, then in Wallpaper Engine choose
 *Open Wallpaper > Open from File* and pick `dist/wallpaper-engine/project.json` (or run the script with `-Open`).
