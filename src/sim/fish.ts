@@ -1,76 +1,46 @@
-import { BEHAVIOUR, DEATH, FOOD, TANK } from '../data/config';
+import { BEHAVIOUR, DEATH, EGGS, FOOD, HEALTH, SOCIAL, TANK } from '../data/config';
 import { DECOR } from '../data/decor';
 import { FOODS } from '../data/foods';
 import { SPECIES } from '../data/species';
-import type { Decor, Env, Fish, Food, SimEvent, Tank } from './types';
+import { buildNest, conceive, findMate, raidable, wantsNest, wardOf } from './breeding';
+import { killFish } from './health';
+import { bodyLength, creep, dist, setTarget, standing, swim } from './motion';
+import { hideTarget, isCovered, shelters, tuckInto } from './shelter';
+import { company, longFinned, nip, pickRival, shoalLeader } from './social';
+import type { Clutch, Env, Fish, Food, SimEvent, Tank } from './types';
 import { stageOf } from './types';
 import { ceilingY, chance, clamp, floorY, lerp, pick, rand } from './util';
 
-const dist = (ax: number, ay: number, bx: number, by: number): number => Math.hypot(ax - bx, ay - by);
+export { bodyLength } from './motion';
+export { killFish } from './health';
 
-/** Screen length of a fish at the front glass, growing smoothly with age. */
-export function bodyLength(f: Fish): number {
-    const L = SPECIES[f.species].lengthPx;
-    const adult = f.sex === 'm' ? L.adultM : L.adultF;
-    const g = f.growth;
-    const base = g < 1 ? lerp(L.baby, L.young, g) : lerp(L.young, adult, clamp(g - 1, 0, 1));
-    return base * f.genes.size;
-}
+const FRONT_GLASS = 0.97;
+const BACK_GLASS = 0.03;
+const NEAR_BED = 200; // a bottom feeder takes sinking food once it is this close to the gravel
+const GRAZE_SECONDS = 7;
 
-/** The space inside a plant or cave where a fry is out of sight. */
-interface Shelter {
-    x: number;
-    y: number;
-    rx: number;
-    ry: number;
-    d: number;
-    cave: boolean;
-}
-
-function shelterOf(dc: Decor): Shelter | null {
-    const data = DECOR[dc.kind];
-    if (data.cover <= 0) return null;
-    const base = floorY(dc.d, dc.x);
-    // A plant shelters fry through its whole height; a cave only in its hollow.
-    if (data.category === 'plant') {
-        return { x: dc.x, y: base + data.height * 0.45, rx: data.cover * 0.8, ry: data.height * 0.4, d: dc.d, cave: false };
-    }
-    return { x: dc.x, y: base + data.height * 0.35, rx: data.cover, ry: data.cover, d: dc.d, cave: true };
-}
-
-function shelters(tank: Tank, caveOnly = false): Shelter[] {
-    const found: Shelter[] = [];
-    for (const dc of tank.decor) {
-        const shelter = shelterOf(dc);
-        if (shelter && (shelter.cave || !caveOnly)) found.push(shelter);
-    }
-    return found;
-}
-
-const within = (s: Shelter, x: number, y: number): boolean => ((x - s.x) / s.rx) ** 2 + ((y - s.y) / s.ry) ** 2 < 1;
-
-/** Fry tucked into a plant or cave cannot be seen by hungry adults. */
-export function isHidden(f: Fish, tank: Tank): boolean {
-    return shelters(tank).some((s) => Math.abs(s.d - f.d) < BEHAVIOUR.coverDepth && within(s, f.x, f.y));
-}
-
-/** Aim for a spot well inside a shelter, low down where the growth is thickest. */
-function tuckInto(f: Fish, s: Shelter): void {
-    setTarget(f, s.x + rand(-0.45, 0.45) * s.rx, s.y + rand(-0.6, 0.25) * s.ry, s.d);
-}
+const alive = (f: Fish): boolean => f.mode !== 'dead';
+const walks = (f: Fish): boolean => SPECIES[f.species].zone === 'crawl' || SPECIES[f.species].zone === 'cling';
 
 function canEat(f: Fish, food: Food): boolean {
-    const stages = FOODS[food.type].eatenBy[f.species];
-    return !!stages && stages.includes(stageOf(f));
+    const species = SPECIES[f.species];
+    const stages = FOODS[food.type].eatenBy[species.diet];
+    if (!stages || !stages.includes(stageOf(f))) return false;
+    if (food.resting) return species.scavenges;
+    if (species.zone === 'water') return true;
+    return species.zone === 'bottom' && food.floatLeft <= 0 && food.y - floorY(food.d, food.x) < NEAR_BED;
 }
 
 function bestFood(f: Fish, tank: Tank): Food | null {
+    const species = SPECIES[f.species];
+    // A slow animal does not set out for food it could never reach before it is gone.
+    const reach = species.zone === 'water' ? FOOD.seekRadius : Math.min(FOOD.seekRadius, species.swimSpeed.adult * 30);
     let best: Food | null = null;
     let bestScore = 0;
     for (const food of tank.food) {
         if (!canEat(f, food)) continue;
         const dd = dist(f.x, f.y, food.x, food.y);
-        if (dd > FOOD.seekRadius) continue;
+        if (dd > reach) continue;
         const score = FOODS[food.type].appeal / (120 + dd);
         if (score > bestScore) {
             bestScore = score;
@@ -80,11 +50,20 @@ function bestFood(f: Fish, tank: Tank): Food | null {
     return best;
 }
 
-function nearestExposedFry(f: Fish, tank: Tank): Fish | null {
+/** Could this hunter swallow that animal? Fry of any kind, shrimplets, and for a few fish grown shrimp too. */
+export function isPrey(hunter: Fish, prey: Fish): boolean {
+    const species = SPECIES[hunter.species];
+    const kind = SPECIES[prey.species];
+    if (hunter === prey || species.mouthPx <= 0 || stageOf(hunter) !== 'adult' || kind.body === 'snail') return false;
+    if (prey.growth >= 1 && !(kind.body === 'shrimp' && species.eatsShrimp)) return false;
+    return bodyLength(prey) < species.mouthPx;
+}
+
+function nearestPrey(f: Fish, tank: Tank): Fish | null {
     let best: Fish | null = null;
     let bestD = BEHAVIOUR.huntSightRadius;
     for (const o of tank.fish) {
-        if (o.mode === 'dead' || o.growth >= 0.8 || o.hidden) continue;
+        if (!alive(o) || o.hidden || !isPrey(f, o)) continue;
         const dd = dist(f.x, f.y, o.x, o.y);
         if (dd < bestD) {
             bestD = dd;
@@ -94,22 +73,76 @@ function nearestExposedFry(f: Fish, tank: Tank): Fish | null {
     return best;
 }
 
-function setTarget(f: Fish, x: number, y: number, d: number): void {
-    const margin = bodyLength(f) * 0.4;
-    f.tx = clamp(x, TANK.left + margin, TANK.right - margin);
-    f.ty = clamp(y, floorY(d, x) + 14, ceilingY(d) - 12);
-    f.td = clamp(d, 0.05, 0.95);
+function nearestEggs(f: Fish, tank: Tank): Clutch | null {
+    let best: Clutch | null = null;
+    let bestD = EGGS.raidSight;
+    for (const c of tank.clutches) {
+        if (!raidable(c, tank) || c.guard === f.id) continue;
+        // Eggs dropped into a thicket are easy to miss.
+        if (c.kind === 'scatter' && isCovered(tank, c.x, c.y, c.d) && chance(EGGS.hiddenInPlant)) continue;
+        const dd = dist(f.x, f.y, c.x, c.y);
+        if (dd < bestD) {
+            bestD = dd;
+            best = c;
+        }
+    }
+    return best;
+}
+
+/** A place to sit for animals that live on surfaces: the glass, a rock or leaf, or the gravel. */
+function perchTarget(f: Fish, tank: Tank): void {
+    const glassShare = SPECIES[f.species].body === 'shrimp' ? 0.05 : 0.3;
+    const roll = rand();
+    if (roll < glassShare) {
+        const d = chance(0.75) ? FRONT_GLASS : BACK_GLASS;
+        const x = f.x + rand(-220, 220);
+        setTarget(f, x, rand(floorY(d, x) + 40, ceilingY(d) - 50), d);
+    } else if (roll < glassShare + 0.35 && tank.decor.length > 0) {
+        const dc = pick(tank.decor);
+        const data = DECOR[dc.kind];
+        setTarget(f, dc.x + rand(-0.3, 0.3) * data.width * dc.size, floorY(dc.d, dc.x) + data.height * dc.size * rand(0.1, 0.7), dc.d + 0.02);
+    } else {
+        const d = rand(0.1, 0.95);
+        const x = f.x + rand(-320, 320);
+        setTarget(f, x, floorY(d, x), d);
+    }
 }
 
 function wanderTarget(f: Fish, tank: Tank): void {
-    const [lo, hi] = SPECIES[f.species].preferredLevel;
+    const species = SPECIES[f.species];
+    if (walks(f)) {
+        perchTarget(f, tank);
+        return;
+    }
+    // A shoal goes where its leader goes, each fish a little to one side.
+    // Corydoras nose along the gravel, and now and then one dashes up for a gulp of air.
+    if (species.zone === 'bottom' && species.breathesAir && chance(0.04)) {
+        setTarget(f, f.x + rand(-60, 60), TANK.surfaceY, f.d);
+        return;
+    }
+    const leader = shoalLeader(f, tank);
+    if (leader && dist(f.x, f.y, leader.x, leader.y) < SOCIAL.shoalRadius * 3) {
+        const spread = SOCIAL.shoalSpread;
+        const x = leader.tx + rand(-spread, spread);
+        const depth = clamp(leader.td + rand(-0.12, 0.12), 0.05, 0.95);
+        // A shoal of bottom fish stays on the bottom, wherever its leader happens to be heading.
+        setTarget(f, x, species.zone === 'bottom' ? floorY(depth, x) : leader.ty + rand(-spread, spread) * 0.5, depth);
+        return;
+    }
     const d = rand(0.08, 0.92);
+    if (species.zone === 'bottom') {
+        setTarget(f, f.x + rand(-450, 450), floorY(d, f.x), d);
+        return;
+    }
+    const [lo, hi] = species.preferredLevel;
     const bottom = floorY(d, f.x);
     const level = chance(0.2) ? rand(0.08, 1) : rand(lo, hi);
     let x = rand(TANK.left, TANK.right);
     let y = bottom + (TANK.surfaceY - bottom) * level;
     // Fry live in and around the plants when there are any, moving from one clump to the next.
-    if (f.growth < 1 && chance(BEHAVIOUR.fryCoverHabit)) {
+    // So does a shoaling fish kept without a shoal.
+    const timid = f.growth < 1 || (species.shoal > 0 && company(f, tank) < species.shoal);
+    if (timid && chance(BEHAVIOUR.fryCoverHabit)) {
         const spots = shelters(tank);
         const close = spots.filter((spot) => Math.abs(spot.x - f.x) < BEHAVIOUR.fryRoam);
         if (spots.length > 0) {
@@ -117,8 +150,8 @@ function wanderTarget(f: Fish, tank: Tank): void {
             return;
         }
     }
-    // Guppies keep loose company: lean toward where the others are.
-    const others = tank.fish.filter((o) => o !== f && o.mode !== 'dead');
+    // Most fish keep loose company: lean toward where the others of their kind are.
+    const others = tank.fish.filter((o) => o !== f && alive(o) && o.species === f.species);
     if (others.length > 0) {
         const cx = others.reduce((s, o) => s + o.x, 0) / others.length;
         const cy = others.reduce((s, o) => s + o.y, 0) / others.length;
@@ -128,33 +161,34 @@ function wanderTarget(f: Fish, tank: Tank): void {
     setTarget(f, x, y, d);
 }
 
-/** Head for the shelter that can be reached soonest, preferring one that is not past the fish it is fleeing. */
-function hideTarget(f: Fish, tank: Tank, caveOnly: boolean, from: Fish | null = null): boolean {
-    let best: Shelter | null = null;
-    let bestCost = Infinity;
-    for (const s of shelters(tank, caveOnly)) {
-        let cost = dist(f.x, f.y, s.x, s.y) + Math.abs(s.d - f.d) * BEHAVIOUR.depthCost;
-        if (from && dist(from.x, from.y, s.x, s.y) < dist(f.x, f.y, s.x, s.y)) cost += BEHAVIOUR.pastThreatCost;
-        if (cost < bestCost) {
-            bestCost = cost;
-            best = s;
-        }
-    }
-    if (!best) return false;
-    tuckInto(f, best);
-    return true;
-}
-
 function forageTarget(f: Fish, tank: Tank): void {
+    const species = SPECIES[f.species];
     // Fry pick at the leaves they are hiding among rather than cross open water.
-    if (f.growth < 1 && chance(0.5) && hideTarget(f, tank, false)) {
+    if (f.growth < 1 && species.zone === 'water' && chance(0.5) && hideTarget(f, tank, false)) {
         f.pecks = 3;
         return;
     }
-    if (tank.decor.length > 0 && chance(0.4)) {
+    // Shrimp and snails clear up the dirt that settles on the gravel.
+    if (species.body !== 'fish' && tank.mulm.length > 0 && chance(0.6)) {
+        const speck = pick(tank.mulm);
+        if (Math.abs(speck.x - f.x) < 500) {
+            setTarget(f, speck.x, floorY(speck.d, speck.x), speck.d);
+            f.pecks = 2;
+            return;
+        }
+    }
+    const leader = shoalLeader(f, tank);
+    if (walks(f)) {
+        perchTarget(f, tank);
+    } else if (leader) {
+        // A shoal feeds as it travels: together.
+        const x = leader.tx + rand(-SOCIAL.shoalSpread, SOCIAL.shoalSpread);
+        const depth = clamp(leader.td + rand(-0.12, 0.12), 0.05, 0.95);
+        setTarget(f, x, species.zone === 'bottom' ? floorY(depth, x) + 16 : leader.ty + rand(-40, 40), depth);
+    } else if (tank.decor.length > 0 && chance(0.4) && species.zone === 'water') {
         const dc = pick(tank.decor);
         const data = DECOR[dc.kind];
-        setTarget(f, dc.x + rand(-0.4, 0.4) * data.width, floorY(dc.d, dc.x) + data.height * rand(0.1, 0.7), dc.d);
+        setTarget(f, dc.x + rand(-0.4, 0.4) * data.width, floorY(dc.d, dc.x) + data.height * dc.size * rand(0.1, 0.7), dc.d);
     } else {
         const d = rand(0.1, 0.9);
         setTarget(f, f.x + rand(-350, 350), floorY(d, f.x) + 16, d);
@@ -162,7 +196,27 @@ function forageTarget(f: Fish, tank: Tank): void {
     f.pecks = 3;
 }
 
-/** Decide what the fish wants to do. Runs a couple of times a second, not every frame. */
+/** A patch of algae to work on: the front glass for those that cling to it, anywhere in reach for the rest. */
+function grazeTarget(f: Fish, tank: Tank): void {
+    // Shrimp and snails pick over rocks, leaves and gravel far more than they climb the glass.
+    if (SPECIES[f.species].zone === 'crawl' && chance(SPECIES[f.species].body === 'shrimp' ? 0.9 : 0.6)) {
+        perchTarget(f, tank);
+        return;
+    }
+    const d = walks(f) ? FRONT_GLASS : 0.92;
+    const x = f.x + rand(-260, 260);
+    setTarget(f, x, rand(floorY(d, x) + 40, ceilingY(d) - 60), d);
+}
+
+function runFrom(f: Fish, tank: Tank, threat: Fish): void {
+    f.mode = 'flee';
+    f.modeTime = 2.5;
+    f.targetId = 0;
+    f.pause = 0;
+    if (!hideTarget(f, tank, false, threat)) setTarget(f, f.x + Math.sign(f.x - threat.x || 1) * 450, f.y + rand(-150, 150), f.d);
+}
+
+/** Decide what the animal wants to do. Runs a couple of times a second, not every frame. */
 function decide(f: Fish, tank: Tank, env: Env): void {
     const stage = stageOf(f);
     const species = SPECIES[f.species];
@@ -179,18 +233,18 @@ function decide(f: Fish, tank: Tank, env: Env): void {
         return changed;
     };
 
-    if (env.gasping) {
+    if (env.gasping && species.body === 'fish' && !species.breathesAir) {
         enter('gasp');
         setTarget(f, f.x + rand(-60, 60), TANK.surfaceY, f.d);
         return;
     }
-    if (stage === 'baby') {
+    if (stage === 'baby' || species.body === 'shrimp') {
         // A hungry fry takes chances: it lets adults come much closer before it gives up feeding.
         const safe = BEHAVIOUR.frySafeDistance * (f.hunger > BEHAVIOUR.fryBoldAbove ? BEHAVIOUR.fryBoldFactor : 1);
-        const threat = tank.fish.find((o) => o.mode !== 'dead' && o.growth >= 2
+        const threat = tank.fish.find((o) => alive(o) && isPrey(o, f)
             && ((o.mode === 'hunt' && o.targetId === f.id) || dist(o.x, o.y, f.x, f.y) < safe));
         if (threat) {
-            // Already out of sight: stay put until the adult has gone. Otherwise bolt for the nearest cover.
+            // Already out of sight: stay put until the hunter has gone. Otherwise bolt for the nearest cover.
             if (f.hidden && f.mode === 'hide') return;
             if (hideTarget(f, tank, false, threat)) {
                 enter('hide');
@@ -206,29 +260,68 @@ function decide(f: Fish, tank: Tank, env: Env): void {
             return;
         }
     }
-    if (env.night) {
+    if (species.nocturnal ? !env.night : env.night) {
         if (enter('rest') || chance(0.05)) {
             const d = rand(0.1, 0.9);
-            if (!(stage === 'baby' && hideTarget(f, tank, false))) setTarget(f, f.x + rand(-200, 200), floorY(d, f.x) + rand(40, 160), d);
+            // A pleco spends the day in its cave; fry sleep in the plants; snails and shrimp stay where they are.
+            const tucked = (species.nocturnal && hideTarget(f, tank, true)) || (stage === 'baby' && hideTarget(f, tank, false));
+            if (!tucked && !walks(f)) setTarget(f, f.x + rand(-200, 200), floorY(d, f.x) + rand(40, 160), d);
         }
         return;
     }
-    if (stage === 'adult' && species.eatsOwnFry && f.hunger > BEHAVIOUR.huntAbove) {
-        const fry = nearestExposedFry(f, tank);
-        if (fry) {
-            enter('hunt');
-            f.targetId = fry.id;
+    const ward = wardOf(f, tank);
+    if (ward) {
+        // A male on eggs, or with a nest ready, drives off whatever comes near and otherwise stays close.
+        // Until she has spawned, a female of his own kind is welcome.
+        const welcome = (o: Fish): boolean => ward.eggs <= 0 && o.species === f.species && o.sex === 'f';
+        const intruder = tank.fish.find((o) => o !== f && alive(o) && !o.hidden && o.growth >= 1 && SPECIES[o.species].body === 'fish'
+            && !welcome(o) && dist(o.x, o.y, ward.x, ward.y) < SOCIAL.guardRadius);
+        if (intruder && f.chaseCooldown <= 0) {
+            enter('chase');
+            f.targetId = intruder.id;
+            return;
+        }
+        if (ward.eggs > 0 || !findMate(f, tank, env)) {
+            enter('guard');
+            setTarget(f, ward.x + rand(-50, 50), ward.y - rand(20, 60), ward.d);
             return;
         }
     }
-    if (stage === 'adult' && f.sex === 'm' && env.canBreed && f.courtCooldown <= 0 && f.hunger < 0.5) {
-        const mate = tank.fish.find((o) => o.sex === 'f' && o.species === f.species && stageOf(o) === 'adult'
-            && o.mode !== 'dead' && !o.pregnancy && o.hunger < 0.5);
-        if (mate) {
-            enter('court');
-            f.targetId = mate.id;
+    const rival = pickRival(f, tank);
+    if (rival) {
+        enter('chase');
+        f.targetId = rival.id;
+        return;
+    }
+    if (species.mouthPx > 0 && stage === 'adult' && f.hunger > BEHAVIOUR.huntAbove) {
+        const prey = nearestPrey(f, tank);
+        if (prey) {
+            enter('hunt');
+            f.targetId = prey.id;
             return;
         }
+    }
+    if (species.eatsEggs && stage !== 'baby' && f.hunger > BEHAVIOUR.huntAbove) {
+        const eggs = nearestEggs(f, tank);
+        if (eggs) {
+            enter('raid');
+            f.targetId = eggs.id;
+            return;
+        }
+    }
+    const mate = findMate(f, tank, env);
+    if (mate) {
+        enter('court');
+        f.targetId = mate.id;
+        return;
+    }
+    if (wantsNest(f, tank, env) && f.hunger < 0.5) {
+        if (enter('build')) setTarget(f, f.x + rand(-250, 250), TANK.surfaceY, rand(0.3, 0.8));
+        return;
+    }
+    if (species.grazes > 0 && tank.algae > 0.03 && f.hunger > 0.15) {
+        if (enter('graze')) grazeTarget(f, tank);
+        return;
     }
     if (f.hunger > BEHAVIOUR.forageAbove) {
         if (enter('forage')) forageTarget(f, tank);
@@ -236,6 +329,50 @@ function decide(f: Fish, tank: Tank, env: Env): void {
     }
     if (stage === 'baby' && f.mode === 'hide' && chance(0.9)) return; // fry linger in cover
     if (enter('wander')) wanderTarget(f, tank);
+}
+
+function stop(f: Fish, think = 0): number {
+    f.mode = 'wander';
+    f.modeTime = 99;
+    f.think = think;
+    return 1;
+}
+
+function chase(f: Fish, tank: Tank, dt: number, events: SimEvent[]): number {
+    const victim = tank.fish.find((o) => o.id === f.targetId);
+    if (!victim || !alive(victim) || victim.hidden) return stop(f);
+    const ward = wardOf(f, tank);
+    const guarding = !!ward && dist(victim.x, victim.y, ward.x, ward.y) < SOCIAL.guardRadius * 1.5;
+    setTarget(f, victim.x, victim.y, victim.d);
+    f.modeTime += dt;
+    victim.stress = clamp(victim.stress + SOCIAL.chasedStress * dt, 0, 1);
+    if (victim.mode !== 'flee' && victim.mode !== 'hide') runFrom(victim, tank, f);
+    const close = dist(f.x, f.y, victim.x, victim.y) < SOCIAL.nipRadius + bodyLength(f) * 0.3 && Math.abs(f.d - victim.d) < 0.2;
+    if (close && f.peck <= 0) {
+        nip(f, victim, guarding, events);
+        f.peck = 0.5;
+    }
+    if (f.modeTime > SOCIAL.chaseSeconds) {
+        // Two males of a fighting species give each other no peace; everyone else is left alone for a while.
+        const feud = !guarding && victim.species === f.species;
+        f.chaseCooldown = rand(SOCIAL.chaseCooldown[0], SOCIAL.chaseCooldown[1]) * (feud ? 0.4 : guarding ? 0.25 : 1);
+        return stop(f);
+    }
+    return 2.4;
+}
+
+function raid(f: Fish, tank: Tank, dt: number): number {
+    const eggs = tank.clutches.find((c) => c.id === f.targetId);
+    if (!eggs || !raidable(eggs, tank)) return stop(f);
+    setTarget(f, eggs.x, eggs.y, eggs.d);
+    f.modeTime += dt;
+    if (dist(f.x, f.y, eggs.x, eggs.y) < 24 + bodyLength(f) * 0.3 && Math.abs(f.d - eggs.d) < 0.2) {
+        const eaten = Math.min(eggs.eggs, EGGS.eatPerSec * dt);
+        eggs.eggs -= eaten;
+        f.hunger = clamp(f.hunger - eaten * 0.03, 0, 1);
+        if (f.peck <= 0) f.peck = 0.3;
+    }
+    return f.modeTime > 8 || f.hunger <= 0.05 ? stop(f, 2) : 1.2;
 }
 
 /** Per-mode work: track moving targets, eat, peck, catch. Returns the speed multiplier. */
@@ -261,57 +398,71 @@ function act(f: Fish, tank: Tank, dt: number, events: SimEvent[]): number {
             return 1.5;
         }
         case 'hunt': {
-            const fry = tank.fish.find((o) => o.id === f.targetId);
-            if (!fry || fry.hidden || fry.mode === 'dead') {
-                f.mode = 'wander';
-                f.think = 0;
-                return 1;
-            }
-            setTarget(f, fry.x, fry.y, fry.d);
+            const prey = tank.fish.find((o) => o.id === f.targetId);
+            if (!prey || prey.hidden || !alive(prey)) return stop(f);
+            setTarget(f, prey.x, prey.y, prey.d);
             f.modeTime += dt;
-            const caught = dist(f.x, f.y, fry.x, fry.y) < reach && Math.abs(f.d - fry.d) < 0.2;
+            const caught = dist(f.x, f.y, prey.x, prey.y) < reach && Math.abs(f.d - prey.d) < 0.2;
             if (caught && chance(BEHAVIOUR.huntCatchChance)) {
-                tank.fish.splice(tank.fish.indexOf(fry), 1);
+                tank.fish.splice(tank.fish.indexOf(prey), 1);
                 f.hunger = clamp(f.hunger - 0.35, 0, 1);
                 f.peck = 0.3;
-                events.push({ kind: 'fryEaten', x: fry.x, y: fry.y });
+                events.push({ kind: 'fryEaten', x: prey.x, y: prey.y });
             }
-            // Fry are quick: a lunge that misses, or a long chase, and the adult loses interest for a while.
-            if (caught || f.modeTime > BEHAVIOUR.huntGiveUpAfter) {
-                f.mode = 'wander';
-                f.modeTime = 99;
-                f.think = BEHAVIOUR.huntRestSeconds;
-            }
+            // Fry are quick: a lunge that misses, or a long chase, and the hunter loses interest for a while.
+            if (caught || f.modeTime > BEHAVIOUR.huntGiveUpAfter) return stop(f, BEHAVIOUR.huntRestSeconds) * 1.7;
             return 1.7;
         }
+        case 'chase':
+            return chase(f, tank, dt, events);
+        case 'raid':
+            return raid(f, tank, dt);
         case 'court': {
             const mate = tank.fish.find((o) => o.id === f.targetId);
-            if (!mate || mate.pregnancy || mate.mode === 'dead') {
-                f.mode = 'wander';
-                f.think = 0;
-                return 1;
-            }
+            if (!mate || mate.pregnancy || !alive(mate)) return stop(f);
+            const laysEggs = SPECIES[f.species].spawning !== 'live' && SPECIES[f.species].spawning !== 'carry';
+            if (laysEggs && (mate.courtCooldown > 0 || tank.clutches.length >= EGGS.maxClutches)) return stop(f);
             // Display just ahead of her, shimmying.
             setTarget(f, mate.x + mate.facing * 50 + Math.sin(tank.time * 6) * 14, mate.y - 10, mate.d);
-            if (dist(f.x, f.y, mate.x, mate.y) < 110) f.modeTime += dt;
+            // Out of her reach his patience still runs down, only slower, so he cannot follow a hidden female for ever.
+            const beside = dist(f.x, f.y, mate.x, mate.y) < 110;
+            f.modeTime += beside ? dt : dt * 0.25;
             if (f.modeTime > BEHAVIOUR.courtSeconds) {
-                const gest = SPECIES[mate.species];
-                if (chance(BEHAVIOUR.mateChance)) {
-                    mate.pregnancy = {
-                        timer: rand(gest.gestationSeconds[0], gest.gestationSeconds[1]),
-                        broodsLeft: Math.round(rand(gest.storedBroods[0], gest.storedBroods[1])),
-                        father: { ...f.genes }, dropping: 0, dropTimer: 0,
-                    };
-                    events.push({ kind: 'mated' });
-                }
+                if (beside && chance(BEHAVIOUR.mateChance)) conceive(tank, f, mate, events);
                 f.courtCooldown = BEHAVIOUR.courtCooldown;
-                f.mode = 'wander';
-                f.think = 0;
+                return stop(f);
             }
             return 1.3;
         }
+        case 'build':
+            // Blowing a raft of bubbles takes a while, and he stays under it as he works.
+            if (dist(f.x, f.y, f.tx, f.ty) < 60) f.modeTime += dt;
+            if (f.modeTime > EGGS.nestBuildSeconds) {
+                buildNest(f, tank);
+                return stop(f);
+            }
+            return 0.8;
+        case 'graze':
+            f.modeTime += dt;
+            if (near) {
+                tank.algae = clamp(tank.algae - SPECIES[f.species].grazes * dt, 0, 1);
+                f.hunger = clamp(f.hunger - dt / 60, 0, 1);
+                if (f.peck <= 0 && !walks(f)) f.peck = 0.4;
+            }
+            if (f.modeTime > GRAZE_SECONDS) {
+                f.modeTime = 0;
+                grazeTarget(f, tank);
+            }
+            return 0.7;
         case 'forage':
             if (near && f.peck <= 0) {
+                // Shrimp and snails eat the dirt they find.
+                const speck = SPECIES[f.species].body === 'fish' ? -1
+                    : tank.mulm.findIndex((m) => Math.abs(m.x - f.x) < 26 && Math.abs(m.d - f.d) < 0.15);
+                if (speck >= 0) {
+                    tank.mulm.splice(speck, 1);
+                    f.hunger = clamp(f.hunger - 0.3, 0, 1);
+                }
                 if (f.pecks > 0) {
                     f.peck = 0.5;
                     f.pecks -= 1;
@@ -320,23 +471,30 @@ function act(f: Fish, tank: Tank, dt: number, events: SimEvent[]): number {
                 }
             }
             return 0.8;
-        case 'wander':
-            if (near || f.modeTime > 14) {
+        case 'wander': {
+            const leader = shoalLeader(f, tank);
+            // Left behind by the shoal: catch up rather than finish the old course.
+            const adrift = !!leader && !walks(f) && dist(f.tx, f.ty, leader.tx, leader.ty) > SOCIAL.shoalSpread * 2.2;
+            if (near || adrift || f.modeTime > 14) {
                 f.modeTime = 0;
-                if (chance(0.3)) f.pause = rand(0.6, 2.5);
+                if (!adrift && chance(walks(f) ? 0.9 : leader ? 0.1 : 0.3)) f.pause = walks(f) ? rand(2, 9) : rand(0.6, 2.5);
                 wanderTarget(f, tank);
             }
             f.modeTime += dt;
-            return 1;
+            return leader && dist(f.x, f.y, leader.x, leader.y) > 260 ? 1.4 : 1;
+        }
         case 'flee':
         case 'approach':
             f.modeTime -= dt;
-            return f.mode === 'flee' ? 2.4 : 1.2;
+            if (f.mode === 'approach') return 1.2;
+            return longFinned(f) ? 2 : 2.4; // long fins are a drag
         case 'freeze':
             f.modeTime -= dt;
             return 0;
         case 'rest':
-            return 0.25;
+            return walks(f) ? (near ? 0 : 0.6) : 0.25;
+        case 'guard':
+            return near ? 0.2 : 0.8;
         case 'gasp':
             return 0.5;
         case 'hide':
@@ -346,66 +504,11 @@ function act(f: Fish, tank: Tank, dt: number, events: SimEvent[]): number {
     }
 }
 
-// Guppies do not glide at a steady pace: they flick the tail, coast, and flick again.
-const DRAG = 2.6; // how quickly a coasting fish slows, per second
-
-function move(f: Fish, dt: number, speed: number): void {
-    const dx = f.tx - f.x;
-    const dy = f.ty - f.y;
-    const dd = Math.hypot(dx, dy) || 1;
-    const arrive = clamp(dd / 50, 0, 1);
-    const paused = f.pause > 0 || f.peck > 0;
-    const wantX = paused ? 0 : (dx / dd) * speed * arrive;
-    const wantY = paused ? 0 : (dy / dd) * speed * arrive * 0.75;
-
-    // A fish cannot swim backwards: when it wants to go the other way it turns round first.
-    if (f.turn > 0) {
-        f.turn -= dt;
-        if (f.turn <= 0) {
-            f.turn = 0;
-            f.facing = f.facing === 1 ? -1 : 1;
-            f.kick = 0;
-        }
-    } else if (Math.abs(wantX) > 5 && Math.sign(wantX) !== f.facing) {
-        f.turn = BEHAVIOUR.turnSeconds;
-    }
-
-    f.kick -= dt;
-    if (f.kick <= 0 && f.turn <= 0) {
-        const want = Math.hypot(wantX, wantY);
-        if (want > 3) {
-            // Faster swimming means harder and more frequent kicks; each one overshoots the wanted speed, then drag takes over.
-            const gap = clamp(34 / want, 0.16, 0.7) * rand(0.7, 1.4);
-            const push = 1 + DRAG * gap * 0.5;
-            f.vx = lerp(f.vx, wantX * push, 0.85);
-            f.vy = lerp(f.vy, wantY * push, 0.85) + rand(-0.06, 0.06) * want;
-            f.kick = gap;
-            f.beat = clamp(0.45 + want / 160, 0, 1);
-        } else {
-            f.kick = rand(0.3, 0.9);
-            f.beat = Math.max(f.beat, 0.12); // sculling in place
-            f.vy += rand(-4, 4);
-        }
-    }
-    const slow = Math.exp(-DRAG * dt);
-    f.vx *= slow;
-    f.vy *= slow;
-    f.beat *= Math.exp(-3.2 * dt);
-
-    const forward = f.turn > 0 ? 0.3 : Math.sign(f.vx) === f.facing || Math.abs(f.vx) < 4 ? 1 : 0.2;
-    f.x += f.vx * forward * dt;
-    f.y += f.vy * dt + Math.sin(f.swimPhase * 0.21) * 1.6 * dt;
-    const dive = f.mode === 'hide' ? BEHAVIOUR.hideDepthSpeed : 0.12; // a bolting fry darts between the stems
-    f.d += clamp(f.td - f.d, -dive * dt, dive * dt);
-    f.x = clamp(f.x, TANK.left + 10, TANK.right - 10);
-    f.y = clamp(f.y, floorY(f.d, f.x) + 8, ceilingY(f.d) - 6);
-    f.swimPhase += dt * (2.5 + 26 * f.beat);
-}
-
 function updateDead(f: Fish, tank: Tank, dt: number): void {
     f.deadTime += dt;
-    const bottom = floorY(f.d, f.x) + 6;
-    if (f.deadTime < DEATH.floatAfter) {
+    const bottom = floorY(f.d, f.x) + (walks(f) ? standing(f) : 6);
+    // A dead fish sinks, then gases lift it. A snail or shrimp stays where it fell.
+    if (f.deadTime < DEATH.floatAfter || SPECIES[f.species].body !== 'fish') {
         f.y = Math.max(bottom, f.y - DEATH.sinkSpeed * dt);
     } else {
         f.y = Math.min(TANK.surfaceY - 4, f.y + DEATH.floatSpeed * dt);
@@ -413,14 +516,6 @@ function updateDead(f: Fish, tank: Tank, dt: number): void {
     f.vx = 0;
     f.vy = 0;
     if (f.deadTime > DEATH.decayAfter) tank.fish.splice(tank.fish.indexOf(f), 1);
-}
-
-export function killFish(f: Fish, events: SimEvent[]): void {
-    f.mode = 'dead';
-    f.deadTime = 0;
-    f.turn = 0;
-    f.pregnancy = null;
-    events.push({ kind: 'died', name: f.name });
 }
 
 export function updateFish(f: Fish, tank: Tank, env: Env, dt: number, events: SimEvent[]): void {
@@ -435,7 +530,7 @@ export function updateFish(f: Fish, tank: Tank, env: Env, dt: number, events: Si
         f.age += dt;
         if (f.growth < 2) {
             const stageTime = f.growth < 1 ? species.stageSeconds.baby : species.stageSeconds.young;
-            // Growth needs food as well as time: a hungry fish grows at about a third of the pace.
+            // Growth needs food as well as time: a hungry animal grows at about a third of the pace.
             f.growth = Math.min(2, f.growth + (dt / stageTime) * lerp(1, 0.35, f.hunger));
         }
         if (tank.settings.oldAge && f.age >= f.lifespan) {
@@ -444,9 +539,12 @@ export function updateFish(f: Fish, tank: Tank, env: Env, dt: number, events: Si
         }
     }
     f.courtCooldown = Math.max(0, f.courtCooldown - dt);
+    f.chaseCooldown = Math.max(0, f.chaseCooldown - dt);
     f.pause = Math.max(0, f.pause - dt);
     f.peck = Math.max(0, f.peck - dt);
-    f.hidden = stage === 'baby' && isHidden(f, tank);
+    // Small animals vanish among the leaves; so does a harried fish that has reached cover.
+    const small = stage === 'baby' || species.body === 'shrimp' || ((f.mode === 'flee' || f.mode === 'hide') && bodyLength(f) < 110);
+    f.hidden = small && isCovered(tank, f.x, f.y, f.d);
 
     f.think -= dt;
     if (f.think <= 0) {
@@ -455,14 +553,23 @@ export function updateFish(f: Fish, tank: Tank, env: Env, dt: number, events: Si
     }
     const multiplier = act(f, tank, dt, events);
     const old = f.age > f.lifespan * 0.85 ? 0.7 : 1;
-    move(f, dt, species.swimSpeed[stage] * multiplier * env.activity * old);
+    const ill = f.sick > 0.3 ? HEALTH.lethargy : 1;
+    const speed = species.swimSpeed[stage] * multiplier * env.activity * old * ill;
+    if (walks(f)) creep(f, dt, speed);
+    else swim(f, dt, speed);
 }
 
-/** A tap on the glass: every nearby fish reacts according to its temperament. */
+/** A tap on the glass: every nearby animal reacts according to its temperament. */
 export function reactToTap(f: Fish, tank: Tank, x: number, y: number): void {
     if (f.mode === 'dead' || dist(f.x, f.y, x, y) > BEHAVIOUR.tapRadius) return;
     f.targetId = 0;
     f.pause = 0;
+    if (walks(f)) {
+        // A snail pulls in, a shrimp or pleco holds still.
+        f.mode = 'freeze';
+        f.modeTime = 3;
+        return;
+    }
     switch (f.temperament) {
         case 'bold':
         case 'curious':

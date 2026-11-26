@@ -20,14 +20,15 @@ export function updateAudio(audio: AudioAPI): void {
         audio.playBGM(path('music'), { volume: 1, fadeIn: 3 });
     }
     const hasBubbler = game.tank.decor.some((dc) => DECOR[dc.kind].category === 'bubbler');
-    hum?.setVolume(s.filterOn ? s.volume.filter * 0.5 : 0);
-    bubbling?.setVolume(s.airOn && hasBubbler ? s.volume.bubbles * 0.6 : 0);
-    if (musicVolume !== s.volume.music) {
-        musicVolume = s.volume.music;
+    const loud = game.muted ? 0 : 1;
+    hum?.setVolume(s.filterOn ? s.volume.filter * 0.5 * loud : 0);
+    bubbling?.setVolume(s.airOn && hasBubbler ? s.volume.bubbles * 0.6 * loud : 0);
+    if (musicVolume !== s.volume.music * loud) {
+        musicVolume = s.volume.music * loud;
         audio.setMusicVolume(musicVolume);
     }
     for (const name of game.sounds) {
-        if (s.volume.feed > 0) audio.playSFX(path(name), { volume: s.volume.feed, pitch: 0.92 + Math.random() * 0.16 });
+        if (s.volume.feed * loud > 0) audio.playSFX(path(name), { volume: s.volume.feed, pitch: 0.92 + Math.random() * 0.16 });
     }
     game.sounds.length = 0;
 }

@@ -2,11 +2,13 @@ import type { InputState } from 'esengine';
 import { TANK } from '../data/config';
 import { DECOR } from '../data/decor';
 import { FOODS } from '../data/foods';
-import { dropFood, removeDecor, scrubAlgae, tapGlass, vacuumAt } from '../sim/tank';
+import { trimPlant } from '../sim/plants';
+import { dropFood, netFish, releaseFish, removeDecor, scrubAlgae, tapGlass, vacuumAt } from '../sim/tank';
 import { clamp, floorY } from '../sim/util';
 import { fishAt } from '../view/fishView';
 import { decorAt } from '../view/tankView';
-import { game } from './state';
+import { endRename, game } from './state';
+import { takeOver } from './sync';
 
 const DEPTH_FRONT_Y = -420; // mouse height that means "against the front glass"
 const DEPTH_BACK_Y = -120; // ... and "against the back glass"
@@ -26,13 +28,12 @@ function dropHeld(): void {
 function typeName(input: InputState): void {
     const fish = game.tank.fish.find((f) => f.id === game.selectedFish);
     if (!fish) {
-        game.renaming = false;
+        endRename();
         return;
     }
     for (const code of input.keysPressed) {
         if (code === 'Enter' || code === 'Escape' || code === 'NumpadEnter') {
-            game.renaming = false;
-            if (fish.name.trim() === '') fish.name = 'Guppy';
+            endRename();
         } else if (code === 'Backspace') {
             fish.name = fish.name.slice(0, -1);
         } else if (fish.name.length < MAX_NAME) {
@@ -65,6 +66,20 @@ function carryDecor(input: InputState, x: number, y: number): void {
     }
 }
 
+/** A click with the net: over a fish it catches it; over open water it lets go of whatever it holds. */
+function useNet(x: number, y: number, inWater: boolean): void {
+    const fish = fishAt(x, y);
+    const caught = fish ? netFish(game.tank, fish.id) : null;
+    if (caught) {
+        game.save.net.push(caught);
+        game.sounds.push('splash');
+    } else if (inWater && game.save.net.length > 0) {
+        releaseFish(game.tank, game.save.net, x);
+        game.save.net = [];
+        game.sounds.push('plop');
+    }
+}
+
 function hintFor(): string {
     switch (game.tool) {
         case 'place': {
@@ -74,7 +89,17 @@ function hintFor(): string {
         case 'decorate': return 'Click a decoration to pick it up. Esc when you are done.';
         case 'vacuum': return 'Hold the mouse button over the gravel to lift the dirt. Mind the fry. Esc to put it away.';
         case 'scrub': return 'Hold the mouse button and rub the glass to clear algae. Esc to put it away.';
-        default: return game.renaming ? 'Type a name, then press Enter.' : '';
+        case 'trim': return 'Click a plant to cut it back. Esc to put the scissors away.';
+        case 'net': {
+            const held = game.save.net.length;
+            return held > 0
+                ? `Net: holding ${held}. Click a fish to catch another, or click open water to let them go (in any tank). Esc to put it away.`
+                : 'Click a fish to catch it, then open another tank and click the water to let it go. Esc to put the net away.';
+        }
+        default:
+            if (game.renaming) return 'Type a name, then press Enter.';
+            if (game.following) return 'Another window is looking after the tanks. Click here to take over.';
+            return game.save.net.length > 0 ? `${game.save.net.length} in the net: open Tanks to let them go.` : '';
     }
 }
 
@@ -84,6 +109,7 @@ export function handleInput(input: InputState, x: number, y: number, overUi: boo
     game.mouseX = x;
     game.mouseY = y;
     game.hint = hintFor();
+    if (input.isMouseButtonPressed(0) || input.isMouseButtonPressed(2)) takeOver();
     if (game.renaming) {
         typeName(input);
         return;
@@ -119,6 +145,15 @@ export function handleInput(input: InputState, x: number, y: number, overUi: boo
         case 'scrub':
             // Algae comes off with rubbing, not with time: the further the pad travels, the more it clears.
             if (input.isMouseButtonDown(0)) scrubAlgae(tank, rubbed / SCRUB_DISTANCE);
+            return;
+        case 'trim':
+            if (input.isMouseButtonPressed(0)) {
+                const hit = decorAt(x, y);
+                if (hit && trimPlant(tank, hit.id)) game.sounds.push('click');
+            }
+            return;
+        case 'net':
+            if (input.isMouseButtonPressed(0)) useNet(x, y, inWater);
             return;
         default:
             break;

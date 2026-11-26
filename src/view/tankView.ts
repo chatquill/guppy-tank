@@ -4,7 +4,7 @@ import { TANK, VIEW, WATER } from '../data/config';
 import { DECOR } from '../data/decor';
 import { game } from '../game/state';
 import { waterQuality } from '../sim/tank';
-import type { Decor } from '../sim/types';
+import type { Clutch, Decor } from '../sim/types';
 import { bedRise, ceilingY, floorY, lerp, shapeBed } from '../sim/util';
 import { EntitySet, LAYER, layerOf, scaleOf, setTexture, shadeOf, spawnSprite, texture, updateSprite } from './sprites';
 import type { Rgba } from './sprites';
@@ -20,6 +20,7 @@ const SURFACE_BAND = 46; // how far down the mirrored underside of the surface r
 const EQUIP_DEPTH = 0.08;
 const FILTER_X = 838;
 const HEATER_X = -850;
+const HEATER_HEIGHT = 280; // on screen at the front glass; the width follows the photograph
 const BLACK: Rgba = { r: 0, g: 0, b: 0, a: 1 };
 const TRIM: Rgba = { r: 0.022, g: 0.024, b: 0.026, a: 1 };
 
@@ -69,6 +70,7 @@ let statics: Statics | null = null;
 const decorSet = new EntitySet();
 const foodSet = new EntitySet();
 const mulmSet = new EntitySet();
+const clutchSet = new EntitySet();
 const bubbles: Bubble[] = [];
 const motes: Mote[] = [];
 let bubbleDebt = 0;
@@ -158,7 +160,9 @@ export function buildTank(world: World): void {
     shapeBed(s.bedShape, s.bedDepth);
     bedLaid = '';
     const filterTex = texture('filter');
+    const heaterTex = texture('heater_on');
     const equipScale = scaleOf(EQUIP_DEPTH) * 0.75;
+    const heaterHeight = HEATER_HEIGHT * equipScale;
     const algae = [];
     for (let i = 0; i < 22; i++) {
         const entry = { x: lerp(TANK.left, TANK.right, Math.random()), y: lerp(-330, 380, Math.random()), size: lerp(200, 420, Math.random()) };
@@ -177,7 +181,7 @@ export function buildTank(world: World): void {
         cloud: spawnSprite(world, 'cloud', 'white', { ...WATER_RECT, layer: LAYER.cloud, color: { r: 0, g: 0, b: 0, a: 0 } }),
         night: spawnSprite(world, 'night', 'white', { ...NIGHT_RECT, layer: LAYER.night, material: 'multiply' }),
         heater: spawnSprite(world, 'heater', 'heater_on', {
-            x: HEATER_X, y: TANK.surfaceY - 150, w: 84 * equipScale, h: 280 * equipScale, layer: layerOf(EQUIP_DEPTH), color: shadeOf(EQUIP_DEPTH),
+            x: HEATER_X, y: TANK.surfaceY - 150, w: heaterHeight * (heaterTex.width / heaterTex.height), h: heaterHeight, layer: layerOf(EQUIP_DEPTH), color: shadeOf(EQUIP_DEPTH),
         }),
         filter: spawnSprite(world, 'filter', 'filter', {
             x: FILTER_X, y: TANK.surfaceY - (filterTex.height * equipScale) / 2 + 30, w: filterTex.width * equipScale, h: filterTex.height * equipScale,
@@ -205,7 +209,7 @@ export function buildTank(world: World): void {
 
 function decorProps(dc: Decor): Rect {
     const data = DECOR[dc.kind];
-    const scale = scaleOf(dc.d);
+    const scale = scaleOf(dc.d) * dc.size;
     const h = data.height * scale;
     // Everything sits a little way into the gravel rather than on top of it.
     return { x: dc.x, y: floorY(dc.d, dc.x) + h / 2 - Math.min(14, h * 0.06), w: data.width * scale, h };
@@ -261,6 +265,30 @@ function syncFoodAndMulm(world: World): void {
         updateSprite(world, mulmSet.get(m.id)[0], {
             x: m.x, y: floorY(m.d, m.x) + 2, w: 30 * scale, h: 15 * scale, layer: layerOf(m.d), order: 1, color: shadeOf(m.d, 0.9),
         });
+    }
+}
+
+// What eggs look like where they lie: [texture, width, height] at the front glass.
+const CLUTCH_ART: Record<Clutch['kind'], [string, number, number]> = {
+    scatter: ['eggs', 42, 28], stick: ['eggs', 42, 28], cave: ['eggs', 42, 28], nest: ['nest', 170, 42], clutch: ['clutch', 26, 26],
+};
+const FULL_CLUTCH = 12; // eggs at which a cluster is drawn at its full size
+
+function syncClutches(world: World): void {
+    const clutches = game.tank.clutches;
+    const byId = new Map(clutches.map((c) => [c.id, c]));
+    clutchSet.sync(world, clutches.map((c) => c.id), (id) => {
+        const art = CLUTCH_ART[(byId.get(id) as Clutch).kind];
+        return [spawnSprite(world, `clutch-${id}`, art[0], { x: 0, y: 0, w: 1, h: 1, layer: LAYER.depthFirst })];
+    });
+    for (const c of clutches) {
+        const [, w, h] = CLUTCH_ART[c.kind];
+        // A bubble nest is its full size from the start; a cluster of eggs shrinks as it is eaten.
+        const fill = c.kind === 'nest' ? 1 : lerp(0.45, 1, Math.min(1, c.eggs / FULL_CLUTCH));
+        const scale = scaleOf(c.d) * fill;
+        // Eggs laid deep in a cave can only just be made out.
+        const alpha = c.kind === 'cave' ? 0.45 : c.kind === 'nest' ? 0.85 : 0.95;
+        updateSprite(world, clutchSet.get(c.id)[0], { x: c.x, y: c.y, w: w * scale, h: h * scale, layer: layerOf(c.d), order: 95, color: shadeOf(c.d, alpha) });
     }
 }
 
@@ -342,17 +370,27 @@ function updateStatics(world: World, dt: number, night: boolean): void {
     updateSprite(world, statics.night, {
         ...NIGHT_RECT, layer: LAYER.night, color: { r: lerp(1, 0.13, dark), g: lerp(1, 0.17, dark), b: lerp(1, 0.27, dark), a: 1 },
     });
-    setTexture(world, statics.heater, s.heaterOn && tank.temp < WATER.heaterTemp - 0.2 ? 'heater_on' : 'heater_off');
+    setTexture(world, statics.heater, s.heaterOn && tank.temp < s.heaterTemp - 0.2 ? 'heater_on' : 'heater_off');
     for (const patch of statics.algae) {
         updateSprite(world, patch.entity, { x: patch.x, y: patch.y, w: patch.size, h: patch.size, layer: LAYER.algae, color: { r: 1, g: 1, b: 1, a: tank.algae * 0.85 } });
     }
 }
 
+/** Take down everything drawn for one tank's contents, for when a different tank comes on screen. */
+export function clearTank(world: World): void {
+    for (const set of [decorSet, foodSet, mulmSet, clutchSet]) set.sync(world, [], () => []);
+    for (const b of bubbles) b.alive = false;
+    bedLaid = '';
+}
+
 export function syncTank(world: World, dt: number, night: boolean): void {
     clock += dt;
+    // Tanks that are not on screen run too, and each shapes the gravel its own way.
+    shapeBed(game.tank.settings.bedShape, game.tank.settings.bedDepth);
     updateStatics(world, dt, night);
     syncDecor(world);
     syncFoodAndMulm(world);
+    syncClutches(world);
     updateBubbles(world, dt);
 }
 

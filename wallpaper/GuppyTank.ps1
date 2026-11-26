@@ -2,8 +2,11 @@
 #   GuppyTank.ps1 wallpaper   the tank as a live desktop background, behind the icons
 #   GuppyTank.ps1 play        the tank in its own window, with menus and sound
 #   GuppyTank.ps1 stop        close whichever of those is running
-# Both modes share one save, so the wallpaper shows the tank you set up while playing.
-param([ValidateSet('wallpaper', 'play', 'stop')] [string]$Mode = 'wallpaper')
+#   GuppyTank.ps1 helper      only start the small background helper that serves the game and keeps the shared save
+#   GuppyTank.ps1 install-helper   start the helper whenever you sign in to Windows (needed for Wallpaper Engine to share the save)
+#   GuppyTank.ps1 remove-helper    stop doing that, and stop the helper
+# Every way of running the game shares one save, kept by the helper in %LOCALAPPDATA%\GuppyTank\save.json.
+param([ValidateSet('wallpaper', 'play', 'stop', 'helper', 'install-helper', 'remove-helper')] [string]$Mode = 'wallpaper')
 
 $ErrorActionPreference = 'Stop'
 $Port = 47815
@@ -12,6 +15,7 @@ $Game = Join-Path (Split-Path -Parent $Here) 'dist\web'
 $Data = Join-Path $env:LOCALAPPDATA 'GuppyTank'
 $BrowserData = Join-Path $Data 'profile'
 $FindWindowSeconds = 30
+$StartupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Guppy Tank helper.lnk'
 
 Add-Type -Namespace GuppyTank -Name Native -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
@@ -31,32 +35,54 @@ Add-Type -Namespace GuppyTank -Name Native -MemberDefinition @'
 [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
 '@
 
-function Get-TankProcesses {
-    # Everything this launcher started: the browser (recognised by its private profile folder) and the file server.
-    Get-CimInstance Win32_Process | Where-Object {
-        $_.CommandLine -and ($_.CommandLine -like "*$BrowserData*" -or $_.CommandLine -like "*serve.ps1*-Port $Port*")
+function Get-TankProcesses([switch]$Helper) {
+    # What this launcher started: the browser (recognised by its private profile folder), or the helper.
+    $pattern = if ($Helper) { "*serve.ps1*-Port $Port*" } else { "*$BrowserData*" }
+    Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine -like $pattern }
+}
+
+function Stop-Processes($Processes) {
+    foreach ($process in $Processes) {
+        try { Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop } catch { }
     }
 }
 
 function Stop-Tank {
-    foreach ($process in Get-TankProcesses) {
-        try { Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop } catch { }
+    Stop-Processes (Get-TankProcesses)
+    # A helper that starts with Windows stays up: Wallpaper Engine may be using it.
+    if (-not (Test-Path -LiteralPath $StartupLink)) { Stop-Processes (Get-TankProcesses -Helper) }
+}
+
+function Test-Server {
+    try {
+        Invoke-WebRequest -Uri "http://localhost:$Port/index.html" -UseBasicParsing -TimeoutSec 2 | Out-Null
+        return $true
     }
+    catch { return $false }
+}
+
+function Install-Helper {
+    $shell = New-Object -ComObject WScript.Shell
+    $link = $shell.CreateShortcut($StartupLink)
+    $link.TargetPath = (Get-Command powershell.exe).Source
+    $link.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSCommandPath`" helper"
+    $link.WindowStyle = 7
+    $link.Description = 'Serves Guppy Tank to this computer and keeps its shared save'
+    $link.Save()
+    "The helper will start when you sign in: $StartupLink"
 }
 
 function Start-Server {
     if (-not (Test-Path (Join-Path $Game 'index.html'))) {
         throw "The game has not been exported yet: $Game\index.html is missing. Export the Web build from the editor to dist\web."
     }
+    if (Test-Server) { return } # already running, for example started at sign-in
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', "`"$(Join-Path $Here 'serve.ps1')`"",
         '-Root', "`"$Game`"", '-Port', $Port)
     Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -WindowStyle Hidden | Out-Null
     foreach ($attempt in 1..40) {
-        try {
-            Invoke-WebRequest -Uri "http://localhost:$Port/index.html" -UseBasicParsing -TimeoutSec 2 | Out-Null
-            return
-        }
-        catch { Start-Sleep -Milliseconds 250 }
+        if (Test-Server) { return }
+        Start-Sleep -Milliseconds 250
     }
     throw "The game's file server did not start on port $Port."
 }
@@ -137,6 +163,15 @@ function Move-BehindIcons([IntPtr]$Window) {
 }
 
 [GuppyTank.Native]::SetProcessDPIAware() | Out-Null
+switch ($Mode) {
+    'helper' { Start-Server; return }
+    'install-helper' { Install-Helper; Start-Server; return }
+    'remove-helper' {
+        if (Test-Path -LiteralPath $StartupLink) { Remove-Item -LiteralPath $StartupLink -Force -Confirm:$false }
+        Stop-Processes (Get-TankProcesses -Helper)
+        return
+    }
+}
 Stop-Tank
 if ($Mode -eq 'stop') { return }
 

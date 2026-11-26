@@ -50,52 +50,62 @@ def load(*parts):
     return Image.open(os.path.join(RENDER, *parts)).convert('RGBA')
 
 
-sizes = {}
-for name, scale in SCANS.items():
-    img = load('scan', name + '.png')
-    if scale != 1:
-        img = img.resize((round(img.width * scale), round(img.height * scale)), Image.LANCZOS)
-    box = img.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
-    img = img.crop(box)
-    sizes[name] = [img.width, img.height]
-    save(img, 'decor', name)
-# One scan came out as a row of separate stems: cut it apart at the empty columns.
-row = load('scan', 'plant_bush.png')
-filled = [x for x in range(row.width) if row.crop((x, 0, x + 1, row.height)).getchannel('A').getextrema()[1] > 8]
-runs = []
-for x in filled:
-    if runs and x - runs[-1][1] <= 6:
-        runs[-1][1] = x
-    else:
-        runs.append([x, x])
-for index, (x0, x1) in enumerate(runs[-4:]):  # the last four carry no flowers
-    part = row.crop((x0, 0, x1 + 1, row.height))
-    part = part.crop(part.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox())
-    sizes[f'plant_stem_{index + 1}'] = [part.width, part.height]
-    save(part, 'decor', f'plant_stem_{index + 1}')
-for name in OLD_DECOR:
-    img = load('decor', name + '.png')
-    sizes[name] = [img.width, img.height]
-    save(img, 'decor', name)
+def main():
+    sizes = {}
+    for name, scale in SCANS.items():
+        img = load('scan', name + '.png')
+        if scale != 1:
+            img = img.resize((round(img.width * scale), round(img.height * scale)), Image.LANCZOS)
+        box = img.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
+        img = img.crop(box)
+        sizes[name] = [img.width, img.height]
+        save(img, 'decor', name)
+    # One scan came out as a row of separate stems: cut it apart at the empty columns.
+    row = load('scan', 'plant_bush.png')
+    filled = [x for x in range(row.width) if row.crop((x, 0, x + 1, row.height)).getchannel('A').getextrema()[1] > 8]
+    runs = []
+    for x in filled:
+        if runs and x - runs[-1][1] <= 6:
+            runs[-1][1] = x
+        else:
+            runs.append([x, x])
+    for index, (x0, x1) in enumerate(runs[-4:]):  # the last four carry no flowers
+        part = row.crop((x0, 0, x1 + 1, row.height))
+        part = part.crop(part.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox())
+        sizes[f'plant_stem_{index + 1}'] = [part.width, part.height]
+        save(part, 'decor', f'plant_stem_{index + 1}')
+    for name in OLD_DECOR:
+        photo = os.path.exists(os.path.join(RENDER, 'photo', 'decor', name + '.png'))  # photo_gear.py replaces the drawn one
+        img = load('photo' if photo else '', 'decor', name + '.png')
+        sizes[name] = [img.width, img.height]
+        save(img, 'decor', name)
 
-for file in sorted(os.listdir(os.path.join(RENDER, 'fishphoto'))):
-    if file.endswith('.png') and not file.startswith('_'):
-        save(load('fishphoto', file), 'fish', file[:-4])
-for file in sorted(os.listdir(os.path.join(RENDER, 'env'))):
-    if file.endswith('.png'):
-        save(load('env', file), 'env', file[:-4])
-for file in sorted(os.listdir(os.path.join(RENDER, 'gen'))):
-    if file.endswith('.png') and (file.startswith('food_') or file[:-4] in OLD_ENV):
-        save(load('gen', file), 'env', file[:-4])
+    for file in sorted(os.listdir(os.path.join(RENDER, 'fishphoto'))):
+        if file.endswith('.png') and not file.startswith('_'):
+            save(load('fishphoto', file), 'fish', file[:-4])
+    for file in sorted(os.listdir(os.path.join(RENDER, 'env'))):
+        if file.endswith('.png'):
+            save(load('env', file), 'env', file[:-4])
+    if os.path.isdir(os.path.join(RENDER, 'photo', 'env')):
+        for file in sorted(os.listdir(os.path.join(RENDER, 'photo', 'env'))):
+            if file.endswith('.png'):
+                save(load('photo', 'env', file), 'env', file[:-4])
+    for file in sorted(os.listdir(os.path.join(RENDER, 'gen'))):
+        if file.endswith('.png') and (file.startswith('food_') or file[:-4] in OLD_ENV):
+            save(load('gen', file), 'env', file[:-4])
 
-os.makedirs(AUDIO, exist_ok=True)
-for file in os.listdir(os.path.join(RENDER, 'audio')):
-    shutil.copy(os.path.join(RENDER, 'audio', file), os.path.join(AUDIO, file))
+    os.makedirs(AUDIO, exist_ok=True)
+    for file in os.listdir(os.path.join(RENDER, 'audio')):
+        shutil.copy(os.path.join(RENDER, 'audio', file), os.path.join(AUDIO, file))
 
-lines = ['// Written by art-src/pack.py: the pixel size of every decoration sprite.',
-         'export const DECOR_SIZES: Record<string, [number, number]> = {']
-lines += [f"    {name}: [{w}, {h}]," for name, (w, h) in sizes.items()]
-lines += ['};', '']
-with open(os.path.join(PROJECT, 'src', 'data', 'decorSizes.ts'), 'w', encoding='utf-8', newline='\n') as f:
-    f.write('\n'.join(lines))
-print('packed', sum(len(files) for _, _, files in os.walk(TEX)), 'texture files')
+    lines = ['// Written by art-src/pack.py: the pixel size of every decoration sprite.',
+             'export const DECOR_SIZES: Record<string, [number, number]> = {']
+    lines += [f"    {name}: [{w}, {h}]," for name, (w, h) in sizes.items()]
+    lines += ['};', '']
+    with open(os.path.join(PROJECT, 'src', 'data', 'decorSizes.ts'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(lines))
+    print('packed', sum(len(files) for _, _, files in os.walk(TEX)), 'texture files')
+
+
+if __name__ == '__main__':
+    main()

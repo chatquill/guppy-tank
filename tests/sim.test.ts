@@ -1,33 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SPECIES } from '../src/data/species';
+import type { Sex, Stage } from '../src/data/species';
 import { TANK } from '../src/data/config';
-import {
-    addFish, createTank, deserialize, dropFood, placeDecor, pourBucket, serialize, stepTank, vacuumAt, waterQuality,
-} from '../src/sim/tank';
+import { deserialize, newSave, serialize } from '../src/sim/save';
+import { addFish as addAny, dropFood, placeDecor, pourBucket, vacuumAt, waterQuality } from '../src/sim/tank';
 import { stageOf } from '../src/sim/types';
-import type { Tank } from '../src/sim/types';
+import type { Fish, Tank } from '../src/sim/types';
 import { seedRandom } from '../src/sim/util';
+import { quietTank, run } from './helpers';
 
 const G = SPECIES.guppy;
-
-/** Run the tank for a while, feeding on a schedule like an attentive owner. */
-function run(tank: Tank, seconds: number, feedEvery = 0, food = 'brine'): string[] {
-    const kinds: string[] = [];
-    const steps = Math.round(seconds * 10);
-    for (let i = 0; i < steps; i++) {
-        if (feedEvery && i % (feedEvery * 10) === 0) dropFood(tank, food, 0, 300);
-        for (const e of stepTank(tank, 0.1)) kinds.push(e.kind);
-    }
-    return kinds;
-}
-
-function quietTank(): Tank {
-    seedRandom(12345);
-    const tank = createTank();
-    tank.settings.lightMode = 'on';
-    return tank;
-}
+const addFish = (tank: Tank, stage: Stage, sex: Sex): Fish => addAny(tank, 'guppy', stage, sex);
 
 test('a fed baby grows into an adult in about the configured time', () => {
     const tank = quietTank();
@@ -183,20 +167,28 @@ test('exposed fry get eaten by hungry adults; plants give them a chance', () => 
     assert.ok(planted > bare * 1.5, `plants help a lot: ${planted} vs ${bare}`);
 });
 
-test('a save round-trips and a damaged save gives a fresh tank', () => {
+test('a save round-trips, an old single-tank save becomes tank one, and a damaged save is refused', () => {
     const tank = quietTank();
     addFish(tank, 'adult', 'm');
     placeDecor(tank, 'orn_statue', 100, 0.4);
     run(tank, 5);
-    assert.deepEqual(deserialize(serialize(tank)), tank);
+    const save = newSave(tank);
+    assert.deepEqual(deserialize(serialize(save)), save);
     assert.equal(deserialize('{broken'), null);
     assert.equal(deserialize(null), null);
-    const old = JSON.parse(serialize(tank));
+    const old = JSON.parse(JSON.stringify(tank));
     delete old.fish[0].kick;
+    delete old.fish[0].stress;
     delete old.fish[0].genes.male;
+    delete old.decor[0].size;
+    delete old.clutches;
+    old.version = 1;
     old.decor.push({ id: 999, kind: 'gone', x: 0, d: 0.5, flip: false, rot: 0 });
-    const mended = deserialize(JSON.stringify(old));
-    assert.equal(mended?.fish[0].kick, 0);
-    assert.ok(Number.isInteger(mended?.fish[0].genes.male));
-    assert.equal(mended?.decor.some((dc) => dc.kind === 'gone'), false);
+    const first = deserialize(JSON.stringify(old))?.tanks[0];
+    assert.equal(first?.fish[0].kick, 0);
+    assert.equal(first?.fish[0].stress, 0);
+    assert.ok(Number.isInteger(first?.fish[0].genes.male));
+    assert.equal(first?.decor[0].size, 1);
+    assert.deepEqual(first?.clutches, []);
+    assert.equal(first?.decor.some((dc) => dc.kind === 'gone'), false);
 });

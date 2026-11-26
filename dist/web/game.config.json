@@ -20,16 +20,16 @@
         "seconds": 0.04,
         "lead": 0.02506
       },
+      "assets/audio/plop.wav": {
+        "seconds": 0.10361,
+        "lead": 0.02506
+      },
       "assets/audio/bubbles.wav": {
         "seconds": 5.5,
         "lead": 0.02506
       },
       "assets/audio/filter_hum.wav": {
         "seconds": 5.5,
-        "lead": 0.02506
-      },
-      "assets/audio/plop.wav": {
-        "seconds": 0.10361,
         "lead": 0.02506
       },
       "assets/audio/splash.wav": {

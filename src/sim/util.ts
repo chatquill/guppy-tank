@@ -1,5 +1,6 @@
 import { BED, TANK } from '../data/config';
-import { FEMALE_LOOKS, MALE_LOOKS } from '../data/strains';
+import { SPECIES } from '../data/species';
+import type { Look, Sex } from '../data/species';
 import type { Genes } from './types';
 
 // One swappable random source so tests can run the simulation deterministically.
@@ -49,9 +50,10 @@ export const floorY = (d: number, x = 0): number => bed.front + (1 - d) * bed.ri
 /** How far the bed climbs between the front glass and the back. */
 export const bedRise = (): number => bed.rise;
 
-export function randomGenes(): Genes {
+export function randomGenes(species = 'guppy'): Genes {
+    const looks = SPECIES[species].looks;
     return {
-        male: randInt(0, MALE_LOOKS.length - 1), female: randInt(0, FEMALE_LOOKS.length - 1),
+        male: randInt(0, looks.m.length - 1), female: randInt(0, looks.f.length - 1),
         size: rand(0.9, 1.1), tone: rand(0.9, 1.04),
     };
 }
@@ -65,6 +67,12 @@ export function inheritGenes(mother: Genes, father: Genes): Genes {
         size: clamp(lerp(mother.size, father.size, t) + rand(-0.03, 0.03), 0.85, 1.15),
         tone: clamp(lerp(mother.tone, father.tone, t) + rand(-0.03, 0.03), 0.85, 1.06),
     };
+}
+
+/** The variety an animal belongs to, whether or not it is old enough to show it. */
+export function lookOf(species: string, sex: Sex, genes: Genes): Look {
+    const looks = SPECIES[species].looks[sex];
+    return looks[Math.abs(sex === 'm' ? genes.male : genes.female) % looks.length];
 }
 
 /** Height of the water surface at a given depth: from below it appears to slope down toward the back. */
