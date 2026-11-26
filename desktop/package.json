@@ -1,0 +1,15 @@
+{
+  "name": "guppy-tank",
+  "productName": "Guppy Tank",
+  "version": "1.0.0",
+  "description": "A realistic guppy aquarium.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.3.6",
+    "electron": "^33.2.0"
+  }
+}

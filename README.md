@@ -60,6 +60,10 @@ These use Microsoft Edge or Google Chrome with a private profile, and a small he
 computer (port 47815). The helper serves the game and keeps the one save that every way of running it shares, in
 `%LOCALAPPDATA%\GuppyTank\save.json`.
 
+**As a Windows program:** run `desktop/Build-Desktop.ps1` (needs Node.js) to turn the exported game into
+`dist/desktop/Guppy Tank-win32-x64/Guppy Tank.exe`, with a zip beside it to share. It needs no browser. F11 or
+Alt+Enter switches fullscreen. It keeps a save of its own, separate from the shared one below.
+
 **In Wallpaper Engine:** run `wallpaper/Build-WallpaperEngine.ps1`, then in Wallpaper Engine choose
 *Open Wallpaper > Open from File* and pick `dist/wallpaper-engine/project.json` (or run the script with `-Open`).
 There the tank stays playable from the desktop: click to feed, and the menus rise above the taskbar. It has no
